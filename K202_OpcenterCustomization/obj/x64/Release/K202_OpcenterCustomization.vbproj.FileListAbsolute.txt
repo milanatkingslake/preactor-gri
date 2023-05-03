@@ -1,0 +1,67 @@
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.pdb
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.xml
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.tlb
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.EventScripts.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.Planner.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.EventScripts.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.OpenPlanningBoard.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.PreactorObject.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\cs\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\de\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\es\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\fr\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\hu\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\it\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ja\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ko\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\nl\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\pl\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\pt\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ru\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\zh\Preactor.Extensibility.resources.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.Resources.resources
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.GenerateResource.cache
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CoreCompileInputs.cache
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CopyComplete
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.dll
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.xml
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.pdb
+D:\Milan\Development\Preactor\GRI\Customization\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.TBMpriorityMapForm.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.pdb
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.xml
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.tlb
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.EventScripts.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.Planner.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.EventScripts.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.OpenPlanningBoard.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\Preactor.Interop.PreactorObject.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\cs\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\de\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\es\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\fr\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\hu\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\it\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ja\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ko\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\nl\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\pl\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\pt\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\ru\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\bin\Release\zh\Preactor.Extensibility.resources.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.Form1.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.K202_JobSplitDetails.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.QuantityPlanningInterface.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.Resources.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.TBMpriorityMapForm.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.GenerateResource.cache
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CoreCompileInputs.cache
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CopyComplete
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.dll
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.xml
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.pdb
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.UpstreamOrderGenarateForm.resources
+C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.RecordValidation.resources
