@@ -3042,8 +3042,8 @@ Public Class CustomAction
             Try
                 preactor.SetShellVariable("K202_IsMemoryEditMode", 1)
 
-                File.Copy(strPath, "DumyLock.tmp")
-                strPath = strPathO + "\DumyLock.tmp"
+                File.Copy(strPath, "DumyLock1.tmp")
+                strPath = strPathO + "\DumyLock1.tmp"
                 File.OpenRead(strPath)
 
                 For Each line As String In File.ReadLines(strPath)
