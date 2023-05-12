@@ -5,6 +5,7 @@ Imports System.Data.Common
 Imports System.Data.SqlClient
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Text
 Imports System.Windows.Forms
 Imports Preactor
 Imports Preactor.Interop.PreactorObject
@@ -2376,17 +2377,17 @@ Public Class CustomAction
         quantityPlanningInterface.ShowDialog()
         'Try
         If quantityPlanningInterface.saveBtnClicked = True Then
-                Dim maxNumberOfOrderNo As Integer = 0
-                Dim firstLetterOfOrderNo As String = "Q"
-                Dim selectedOrderList As New List(Of String)
-                If currentYear = 2022 Then
-                    firstLetterOfOrderNo = "Q"
-                ElseIf currentYear = 2023 Then
-                    firstLetterOfOrderNo = "R"
-                ElseIf currentYear = 2024 Then
-                    firstLetterOfOrderNo = "S"
-                End If
-                Dim firstPart As String = firstLetterOfOrderNo + currentMonthName.Substring(0, 1) + currentDateWithNumber.ToString
+            Dim maxNumberOfOrderNo As Integer = 0
+            Dim firstLetterOfOrderNo As String = "Q"
+            Dim selectedOrderList As New List(Of String)
+            If currentYear = 2022 Then
+                firstLetterOfOrderNo = "Q"
+            ElseIf currentYear = 2023 Then
+                firstLetterOfOrderNo = "R"
+            ElseIf currentYear = 2024 Then
+                firstLetterOfOrderNo = "S"
+            End If
+            Dim firstPart As String = firstLetterOfOrderNo + currentMonthName.Substring(0, 1) + currentDateWithNumber.ToString
 
             For e As Integer = 0 To dt.Rows.Count - 1
                 If e >= 1 Then
@@ -2466,66 +2467,63 @@ Public Class CustomAction
                 End If
             Next
             preactor.Commit("Orders")
-                Dim ordersCountNew = preactor.RecordCount("Orders")
-                For Each element As String In selectedOrderList
-                    If ordersCountNew > 0 Then
-                        Dim g As Integer = 1
-                        Do
-                            Dim orderNoOfG As String = preactor.ReadFieldString("Orders", "Order No.", g)
-                            Dim belongsToOrderNo As String = preactor.ReadFieldString("Orders", "Belongs to Order No.", g)
-                            If orderNoOfG = element Then
-                                Dim stringAttribute2 As String = preactor.ReadFieldString("Orders", "String Attribute 2", g)
-                                If stringAttribute2 = "CLM" And belongsToOrderNo = "PARENT" Then
-                                    preactor.WriteField("Orders", "Disable Operation", g, False)
-                                    Dim h As Integer = 1
-                                    Do
-                                        Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
-                                        Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
-                                        Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
-                                        If orderNoOfH = orderNoOfG Then
-                                            If opNoOfH = 40 And opName.Contains("COMPRESSION") Then
-                                                preactor.WriteField("Orders", "Disable Operation", h, True)
-                                            End If
-                                            If opNoOfH = 50 Then
-                                                preactor.WriteField("Orders", "Disable Operation", h, True)
-                                            End If
+            Dim ordersCountNew = preactor.RecordCount("Orders")
+            For Each element As String In selectedOrderList
+                If ordersCountNew > 0 Then
+                    Dim g As Integer = 1
+                    Do
+                        Dim orderNoOfG As String = preactor.ReadFieldString("Orders", "Order No.", g)
+                        Dim belongsToOrderNo As String = preactor.ReadFieldString("Orders", "Belongs to Order No.", g)
+                        If orderNoOfG = element Then
+                            Dim stringAttribute2 As String = preactor.ReadFieldString("Orders", "String Attribute 2", g)
+                            If stringAttribute2 = "CLM" And belongsToOrderNo = "PARENT" Then
+                                preactor.WriteField("Orders", "Disable Operation", g, False)
+                                Dim h As Integer = 1
+                                Do
+                                    Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
+                                    Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
+                                    Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
+                                    If orderNoOfH = orderNoOfG Then
+                                        If opNoOfH = 40 And opName.Contains("COMPRESSION") Then
+                                            preactor.WriteField("Orders", "Disable Operation", h, True)
                                         End If
-                                        h = h + 1
-                                    Loop While h <= ordersCountNew
-                                End If
-                                If stringAttribute2 = "CMP" And belongsToOrderNo = "PARENT" Then
-                                    preactor.WriteField("Orders", "Disable Operation", g, False)
-                                    Dim h As Integer = 1
-                                    Do
-                                        Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
-                                        Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
-                                        Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
-                                        If orderNoOfH = orderNoOfG Then
-                                            If opNoOfH = 40 And opName.Contains("CLAMP") Then
-                                                preactor.WriteField("Orders", "Disable Operation", h, True)
-                                            End If
+                                        If opNoOfH = 50 Then
+                                            preactor.WriteField("Orders", "Disable Operation", h, True)
                                         End If
-                                        h = h + 1
-                                    Loop While h <= ordersCountNew
-                                End If
-
+                                    End If
+                                    h = h + 1
+                                Loop While h <= ordersCountNew
                             End If
-                            g = g + 1
-                        Loop While g <= ordersCountNew
-                    End If
-                Next
-                preactor.Commit("Orders")
-                quantityPlanningInterface.Close_Interface()
-            End If
+                            If stringAttribute2 = "CMP" And belongsToOrderNo = "PARENT" Then
+                                preactor.WriteField("Orders", "Disable Operation", g, False)
+                                Dim h As Integer = 1
+                                Do
+                                    Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
+                                    Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
+                                    Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
+                                    If orderNoOfH = orderNoOfG Then
+                                        If opNoOfH = 40 And opName.Contains("CLAMP") Then
+                                            preactor.WriteField("Orders", "Disable Operation", h, True)
+                                        End If
+                                    End If
+                                    h = h + 1
+                                Loop While h <= ordersCountNew
+                            End If
+                        End If
+                        g = g + 1
+                    Loop While g <= ordersCountNew
+                End If
+            Next
+            preactor.Commit("Orders")
+            quantityPlanningInterface.Close_Interface()
+        End If
         'Catch ex As Exception
         '    MsgBox("Error")
         'End Try
 
         Return 0
     End Function
-
     Public Function GetMaxMolds(ByRef connetionString As String, ByRef intSecondaryConstraintRecNumber As Integer, ByRef dtStartTime As Date) As Integer
-
         Try
             Dim connection As SqlConnection
             Dim adapter As SqlDataAdapter
@@ -2546,12 +2544,10 @@ Public Class CustomAction
             param.Direction = ParameterDirection.Input
             param.DbType = DbType.Int64
             command.Parameters.Add(param)
-
             param = New SqlParameter("@StartDate", dtStartTime)
             param.Direction = ParameterDirection.Input
             param.DbType = DbType.Date
             command.Parameters.Add(param)
-
             Dim intTotalSpindle As Integer = 0
             param = New SqlParameter("@MaxValue", intTotalSpindle)
             param.Direction = ParameterDirection.Output
@@ -3025,6 +3021,52 @@ Public Class CustomAction
         Next
         ' Designed to be used without concurrent setup option for resources
         preactor.Commit("Orders")
+        Return 0
+    End Function
+
+    Public Function CheckUserIsInMemoryEditMode(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim strPathO As String
+        Dim strPath As String
+        Dim strLockUser As String
+        Dim strCurrentUser As String
+
+
+        strPathO = preactor.ParseShellString("{PATH}")
+        strCurrentUser = preactor.ParseShellString("{USER NAME}")
+
+        strPath = strPathO + "\locked.tmp"
+        If File.Exists(strPath) Then
+            ''MsgBox("File has " + strPath)
+
+            Try
+                preactor.SetShellVariable("K202_IsMemoryEditMode", 1)
+
+                File.Copy(strPath, "DumyLock.tmp")
+                strPath = strPathO + "\DumyLock.tmp"
+                File.OpenRead(strPath)
+
+                For Each line As String In File.ReadLines(strPath)
+                    strLockUser = line
+                    'MsgBox(strLockUser)
+                    'MsgBox(strCurrentUser)
+                    If (strLockUser = strCurrentUser) Then
+                        ''MsgBox("You can't Execute the process,because '" + strLockUser + "' User is accessing the system")
+                        MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
+                        File.Delete(strPath)
+                    End If
+                Next
+                File.Delete(strPath)
+            Catch ex As Exception
+                MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
+
+                MsgBox("Error " + ex.Message)
+
+            End Try
+
+        Else
+            MsgBox(strPath)
+        End If
         Return 0
     End Function
 End Class
