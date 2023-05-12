@@ -65,3 +65,40 @@ C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x
 C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.pdb
 C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.UpstreamOrderGenarateForm.resources
 C:\New Configuration\K202_OpcenterCustomization\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.RecordValidation.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.pdb
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.xml
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\K202_OpcenterCustomization.tlb
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.EventScripts.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Extensibility.Planner.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Interop.EventScripts.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Interop.OpenPlanningBoard.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\Preactor.Interop.PreactorObject.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\cs\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\de\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\es\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\fr\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\hu\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\it\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\ja\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\ko\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\nl\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\pl\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\pt\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\ru\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\bin\Release\zh\Preactor.Extensibility.resources.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.AssemblyReference.cache
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.Form1.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.K202_JobSplitDetails.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.QuantityPlanningInterface.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.Resources.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.RecordValidation.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.TBMpriorityMapForm.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.UpstreamOrderGenarateForm.resources
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.GenerateResource.cache
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CoreCompileInputs.cache
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.vbproj.CopyComplete
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.dll
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.xml
+C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Release\K202_OpcenterCustomization.pdb

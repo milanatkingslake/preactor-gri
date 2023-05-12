@@ -1593,121 +1593,6 @@ Public Class CustomAction
         Return 0
     End Function
 
-    'Function AdjustCuringStartAndEnd(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef RecordNumber As Integer) As Integer
-    '    Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
-    '    Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", RecordNumber)
-    '    Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", RecordNumber)
-    '    Dim num As Integer = preactor.RecordCount("Orders")
-
-    '    Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", RecordNumber)
-    '    Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", RecordNumber)
-
-    '    Dim newStartDate As Date = startDate.AddMinutes(-30)
-    '    Dim newEndDate As Date = endDate.AddMinutes(30)
-    '    'MsgBox("Start Date : " & startDate & "/ New Start Date : " & newStartDate)
-    '    'MsgBox("End Date : " & endDate & "/ New End Date : " & newEndDate)
-    '    Dim resource As String = preactor.ReadFieldString("Orders", "Resource", RecordNumber)
-    '    Dim i As Integer = 1
-    '    'MsgBox("Resource " & resource)
-    '    Dim list As New List(Of Integer)
-    '    Do
-    '        Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
-    '        Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
-    '        Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
-    '        If endDate2 >= newStartDate And endDate2 <= newEndDate And resource2 = resource Then
-    '            list.Add(i)
-    '        End If
-    '        i = i + 1
-    '    Loop While i <= num
-
-
-    '    Dim maxEndDate As Date = #9/23/1899 01:00 AM#
-
-    '    For Each record As Integer In list
-    '        Dim endDateOfRecord As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
-    '        If maxEndDate < endDateOfRecord Then
-    '            maxEndDate = endDateOfRecord
-    '        End If
-    '    Next
-
-    '    For Each record As Integer In list
-    '        Dim endDateOfRecordd As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
-    '        Dim timeDifference As TimeSpan = maxEndDate.Subtract(endDateOfRecordd)
-    '        Dim setupTime As Double = preactor.ReadFieldDouble("Orders", "Setup Time", record)
-    '        If Not endDateOfRecordd = endDate Then
-    '            Dim totalSetupTime As Double = setupTime + timeDifference.TotalDays
-    '            preactor.WriteField("Orders", "Setup Time", record, totalSetupTime)
-    '        End If
-
-    '    Next
-
-    '    Dim planningboard As IPlanningBoard = preactor.PlanningBoard
-    '    preactor.Commit("Orders")
-    '    Return 0
-    'End Function
-
-    Function RemoveSetupTime(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
-        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
-
-        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
-        Dim num As Integer = preactor.RecordCount("Orders")
-        Dim y As Integer = 1
-        Dim maxEndDate As Date = #9/23/1899 01:00 AM#
-        Dim recordNumber As Integer
-        Do
-            If (planningboard.GetOperationLocateState(y)) Then
-                Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", y)
-                Dim endDateOfY As Date = preactor.ReadFieldDateTime("Orders", "End Time", y)
-                'MsgBox("End date of y " & endDateOfY)
-                'Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", y)
-                If operationName.Contains("COMPRESSION") Then
-                    If endDateOfY > maxEndDate Then
-                        maxEndDate = endDateOfY
-                        recordNumber = y
-                    End If
-                End If
-            End If
-            y = y + 1
-        Loop While y <= num
-
-
-
-        Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
-        Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", recordNumber)
-        Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", recordNumber)
-        Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
-
-        Dim newStartDate As Date = startDate.AddMinutes(-30)
-        Dim newEndDate As Date = endDate.AddMinutes(30)
-        'MsgBox("Start Date : " & startDate & "/ New Start Date : " & newStartDate)
-        'MsgBox("End Date : " & endDate & "/ New End Date : " & newEndDate)
-        Dim resource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
-        Dim i As Integer = 1
-
-
-        'MsgBox("Resource " & resource)
-        Dim list As New List(Of Integer)
-        Do
-            Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
-            If operationName.Contains("COMPRESSION") Then
-                Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
-                Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
-                Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
-                If (endDate2 >= newStartDate And endDate2 <= newEndDate And resource2 = resource) Or (startDate2 >= newStartDate And startDate2 <= newEndDate And resource2 = resource) Then
-                    list.Add(i)
-                End If
-            End If
-            i = i + 1
-        Loop While i <= num
-
-
-        For Each record As Integer In list
-            preactor.WriteField("Orders", "Setup Time", record, 0)
-        Next
-        preactor.Commit("Orders")
-        Return 0
-    End Function
-
     Function AdjustCuringStartAndEndForMultipleRecords(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
 
@@ -3069,6 +2954,308 @@ Public Class CustomAction
         End If
         Return 0
     End Function
+
+    Public Function AdjustCuringStartAndEnd(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef recordNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+        Dim num As Integer = preactor.RecordCount("Orders")
+        Dim resourceCount As Integer = preactor.RecordCount("Resources")
+        Dim maxEndDate As Date = #9/23/1899 01:00 AM#
+
+        Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
+        Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", recordNumber)
+        Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", recordNumber)
+        Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
+
+        'Dim newStartDate As Date = startDate.AddMinutes(-30)
+        'Dim newEndDate As Date = endDate.AddMinutes(30)
+        Dim newStartDate As Date = startDate
+        Dim newEndDate As Date = endDate
+
+        Dim resource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
+        'Read the attribute 1 from resources table.
+
+        'Read the attribute 1 of the order.
+        Dim attribute01 As String = ""
+        Dim resourceCountStart = 1
+        Do
+            Dim resourceNew As String = preactor.ReadFieldString("Resources", "Name", resourceCountStart)
+            If resourceNew = resource Then
+                attribute01 = preactor.ReadFieldString("Resources", "Attribute 1", resourceCountStart)
+            End If
+            resourceCountStart = resourceCountStart + 1
+        Loop While resourceCountStart <= resourceCount
+
+        Dim i As Integer = 1
+        Dim list As New List(Of Integer)
+        Do
+            Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+            Dim operationNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+            Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
+            Dim resourceCountStart2 As Integer = 1
+            Dim eachReseourceAttribute1 As String = ""
+            Do
+                Dim eachReseourceName As String = ""
+                eachReseourceName = preactor.ReadFieldString("Resources", "Name", resourceCountStart2)
+                If eachReseourceName = resource2 Then
+                    eachReseourceAttribute1 = preactor.ReadFieldString("Resources", "Attribute 1", resourceCountStart2)
+                End If
+                resourceCountStart2 = resourceCountStart2 + 1
+            Loop While resourceCountStart2 <= resourceCount
+
+            If eachReseourceAttribute1 = attribute01 Then
+                Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
+                Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+                If (endDate2 >= newStartDate And endDate2 <= newEndDate) Then
+                    If operationName.Contains("COMPRESSION") Then
+                        If operationNo = 40 Then
+                            list.Add(i)
+                        End If
+                    End If
+                End If
+            End If
+            i = i + 1
+        Loop While i <= num
+
+
+        For Each record As Integer In list
+            Dim endDateOfRecord As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
+            If maxEndDate < endDateOfRecord Then
+                maxEndDate = endDateOfRecord
+            End If
+        Next
+
+        For Each record As Integer In list
+            Dim endDateOfRecordd As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
+            Dim timeDifference As TimeSpan = maxEndDate.Subtract(endDateOfRecordd)
+            Dim setupTime As Double = preactor.ReadFieldDouble("Orders", "Setup Time", record)
+            Dim totalSetupTime As Double = setupTime + timeDifference.TotalDays
+            preactor.WriteField("Orders", "Setup Time", record, totalSetupTime)
+        Next
+        ' Designed to be used without concurrent setup option for resources
+        preactor.Commit("Orders")
+        Return 0
+    End Function
+
+    Function RemoveSetupTime(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef recordNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+        Dim ordersCount As Integer = preactor.RecordCount("Orders")
+
+        Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
+        Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", recordNumber)
+        Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", recordNumber)
+        Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
+        Dim resource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
+
+        Dim i As Integer = 1
+        Dim resourceCount As Integer = preactor.RecordCount("Resources")
+
+        Dim attribute01 As String = ""
+        Dim resourceCountStart = 1
+        Do
+            Dim resourceNew As String = preactor.ReadFieldString("Resources", "Name", resourceCountStart)
+            If resourceNew = resource Then
+                attribute01 = preactor.ReadFieldString("Resources", "Attribute 1", resourceCountStart)
+            End If
+            resourceCountStart = resourceCountStart + 1
+        Loop While resourceCountStart <= resourceCount
+
+
+        'MsgBox("Resource " & resource)
+        Dim list As New List(Of Integer)
+        Do
+            Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+            If operationName.Contains("COMPRESSION") Then
+                Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
+                Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+                Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
+                Dim resourceCountStart2 As Integer = 1
+                Dim eachReseourceAttribute1 As String = ""
+                Do
+                    Dim eachReseourceName As String = ""
+                    eachReseourceName = preactor.ReadFieldString("Resources", "Name", resourceCountStart2)
+                    If eachReseourceName = resource2 Then
+                        eachReseourceAttribute1 = preactor.ReadFieldString("Resources", "Attribute 1", resourceCountStart2)
+                    End If
+                    resourceCountStart2 = resourceCountStart2 + 1
+                Loop While resourceCountStart2 <= resourceCount
+
+                If (endDate2 >= startDate And endDate2 <= endDate And eachReseourceAttribute1 = attribute01) Then
+                    list.Add(i)
+                End If
+            End If
+            i = i + 1
+        Loop While i <= ordersCount
+
+        For Each record As Integer In list
+            preactor.WriteField("Orders", "Setup Time", record, 0)
+        Next
+        preactor.Commit("Orders")
+        Return 0
+    End Function
+
+    'Code backup 2023/05/23
+
+    'Public Function AdjustCuringStartAndEndOld(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+    '    Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+    '    Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+    '    Dim num As Integer = preactor.RecordCount("Orders")
+    '    Dim resourceCount As Integer = preactor.RecordCount("Resources")
+    '    Dim y As Integer = 1
+    '    Dim maxEndDate As Date = #9/23/1899 01:00 AM#
+    '    Dim recordNumber As Integer
+    '    Do
+    '        If (planningboard.GetOperationLocateState(y)) Then
+    '            Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", y)
+    '            Dim operationNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", y)
+    '            Dim endDateOfY As Date = preactor.ReadFieldDateTime("Orders", "End Time", y)
+    '            'MsgBox("End date of y " & endDateOfY)
+    '            'Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", y)
+    '            If operationName.Contains("COMPRESSION") Then
+    '                If operationNo = 40 Then
+    '                    If endDateOfY > maxEndDate Then
+    '                        maxEndDate = endDateOfY
+    '                        recordNumber = y
+    '                    End If
+    '                End If
+    '            End If
+    '        End If
+    '        y = y + 1
+    '    Loop While y <= num
+
+
+
+    '    Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
+    '    Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", recordNumber)
+    '    Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", recordNumber)
+    '    Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
+
+    '    Dim newStartDate As Date = startDate.AddMinutes(-30)
+    '    Dim newEndDate As Date = endDate.AddMinutes(30)
+    '    'MsgBox("Start Date : " & startDate & "/ New Start Date : " & newStartDate)
+    '    'MsgBox("End Date : " & endDate & "/ New End Date : " & newEndDate)
+    '    Dim resource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
+    '    MsgBox("Resource is " & resource & " Order no " & strOrderNo)
+    '    'Read the attribute 1 from resources table.
+    '    Dim attribute01 As String = ""
+    '    Dim resourceCountStart = 1
+    '    Do
+    '        Dim resourceNew As String = preactor.ReadFieldString("Resources", "Name", resourceCountStart)
+    '        MsgBox(resourceNew)
+    '        If resourceNew = resource Then
+    '            MsgBox("resources are same")
+    '            attribute01 = preactor.ReadFieldString("Resources", "Attribute 1", resourceCountStart)
+    '        End If
+    '        resourceCountStart = resourceCountStart + 1
+    '    Loop While resourceCountStart <= resourceCount
+
+    '    MsgBox("Attribute 01 " & attribute01)
+    '    Dim i As Integer = 1
+    '    'MsgBox("Resource " & resource)
+    '    Dim list As New List(Of Integer)
+    '    Do
+    '        Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+    '        Dim operationNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+
+    '        If operationName.Contains("COMPRESSION") Then
+    '            If operationNo = 40 Then
+    '                Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
+    '                Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+    '                Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
+    '                If (endDate2 >= newStartDate And endDate2 <= newEndDate And resource2 = resource) Or (startDate2 >= newStartDate And startDate2 <= newEndDate And resource2 = resource) Then
+    '                    list.Add(i)
+    '                End If
+    '            End If
+    '        End If
+    '        i = i + 1
+    '    Loop While i <= num
+
+
+    '    For Each record As Integer In list
+    '        Dim endDateOfRecord As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
+    '        If maxEndDate < endDateOfRecord Then
+    '            maxEndDate = endDateOfRecord
+    '        End If
+    '    Next
+
+    '    For Each record As Integer In list
+    '        Dim endDateOfRecordd As Date = preactor.ReadFieldDateTime("Orders", "End Time", record)
+    '        'MsgBox("End date" & endDateOfRecordd)
+    '        Dim timeDifference As TimeSpan = maxEndDate.Subtract(endDateOfRecordd)
+    '        'MsgBox("Time difference in Minutes" & timeDifference.TotalMinutes)
+    '        Dim setupTime As Double = preactor.ReadFieldDouble("Orders", "Setup Time", record)
+    '        Dim totalSetupTime As Double = setupTime + timeDifference.TotalDays
+    '        preactor.WriteField("Orders", "Setup Time", record, totalSetupTime)
+    '    Next
+    '    ' Designed to be used without concurrent setup option for resources
+    '    preactor.Commit("Orders")
+    '    Return 0
+    'End Function
+
+    'Function RemoveSetupTimeOld(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+    '    Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+
+    '    Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+    '    Dim num As Integer = preactor.RecordCount("Orders")
+    '    Dim y As Integer = 1
+    '    Dim maxEndDate As Date = #9/23/1899 01:00 AM#
+    '    Dim recordNumber As Integer
+    '    Do
+    '        If (planningboard.GetOperationLocateState(y)) Then
+    '            Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", y)
+    '            Dim endDateOfY As Date = preactor.ReadFieldDateTime("Orders", "End Time", y)
+    '            'MsgBox("End date of y " & endDateOfY)
+    '            'Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", y)
+    '            If operationName.Contains("COMPRESSION") Then
+    '                If endDateOfY > maxEndDate Then
+    '                    maxEndDate = endDateOfY
+    '                    recordNumber = y
+    '                End If
+    '            End If
+    '        End If
+    '        y = y + 1
+    '    Loop While y <= num
+
+
+
+    '    Dim strOrderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
+    '    Dim strOrderOprName As String = preactor.ReadFieldString("Orders", "Operation Name", recordNumber)
+    '    Dim endDate As Date = preactor.ReadFieldDateTime("Orders", "End Time", recordNumber)
+    '    Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
+
+    '    Dim newStartDate As Date = startDate.AddMinutes(-30)
+    '    Dim newEndDate As Date = endDate.AddMinutes(30)
+    '    'MsgBox("Start Date : " & startDate & "/ New Start Date : " & newStartDate)
+    '    'MsgBox("End Date : " & endDate & "/ New End Date : " & newEndDate)
+    '    Dim resource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
+    '    Dim i As Integer = 1
+
+
+    '    'MsgBox("Resource " & resource)
+    '    Dim list As New List(Of Integer)
+    '    Do
+    '        Dim operationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+    '        If operationName.Contains("COMPRESSION") Then
+    '            Dim endDate2 As Date = preactor.ReadFieldDateTime("Orders", "End Time", i)
+    '            Dim startDate2 As Date = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+    '            Dim resource2 As String = preactor.ReadFieldString("Orders", "Resource", i)
+    '            If (endDate2 >= newStartDate And endDate2 <= newEndDate And resource2 = resource) Or (startDate2 >= newStartDate And startDate2 <= newEndDate And resource2 = resource) Then
+    '                list.Add(i)
+    '            End If
+    '        End If
+    '        i = i + 1
+    '    Loop While i <= num
+
+
+    '    For Each record As Integer In list
+    '        preactor.WriteField("Orders", "Setup Time", record, 0)
+    '    Next
+    '    preactor.Commit("Orders")
+    '    Return 0
+    'End Function
+
 End Class
 
 
