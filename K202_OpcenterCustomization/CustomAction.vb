@@ -3023,7 +3023,7 @@ Public Class CustomAction
         preactor.Commit("Orders")
         Return 0
     End Function
-
+    ''Added by  Milana amarasooriya 20230512
     Public Function CheckUserIsInMemoryEditMode(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
         Dim strPathO As String
