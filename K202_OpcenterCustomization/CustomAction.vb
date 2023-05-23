@@ -1971,6 +1971,7 @@ Public Class CustomAction
             n = n + 1
         Loop While n <= currentDateWithNumber
 
+        'Put quantity under the each date in the month.
         For c As Integer = 0 To dt.Rows.Count - 1
             If c >= 1 Then
                 Dim p As Integer = 1
@@ -2078,9 +2079,9 @@ Public Class CustomAction
                         If partNoNew = sku Then
                             Dim qty As Integer = preactor.ReadFieldInt("Orders", "Quantity", d)
                             Dim strBelongsToOrderNo As String = preactor.ReadFieldString("Orders", "Belongs to Order No.", d)
-                            'MsgBox(strBelongsToOrderNo)
-                            If strBelongsToOrderNo = "PARENT" Then
-
+                            Dim opNoOfOrder As Integer = preactor.ReadFieldInt("Orders", "Op. No.", d)
+                            Dim resourceOfOrder As Integer = preactor.ReadFieldInt("Orders", "Resource", d)
+                            If opNoOfOrder = 40 And Not resourceOfOrder = -1 Then
                                 sumOnPlanQty = sumOnPlanQty + qty
                             End If
                         End If
@@ -3164,6 +3165,142 @@ Public Class CustomAction
     '    preactor.Commit("Orders")
     '    Return 0
     'End Function
+
+    Function K202_CustomSchedulingWindowFunction(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim K202_CustomSchedulingWindowForm As New K202_CustomSchedulingWindow()
+        Dim K202_CustomSchedulingWindowSecondPartForm As New K202_CustomSchedulingWindowSecondPart()
+        'Get orders count
+        Dim ordersCount As Integer = preactor.RecordCount("Orders")
+        'Get resource count
+        Dim resourceCount As Integer = preactor.RecordCount("Resources")
+
+        Dim resourcesLoopStart As Integer = 1
+        Dim ordersLoopStart As Integer = 1
+        Dim attribute01List As New List(Of String)
+        attribute01List.Add("")
+        Do
+            Dim attribute01OfResource As String = preactor.ReadFieldString("Resources", "Attribute 1", resourcesLoopStart)
+            If Not attribute01OfResource = "" Then
+                attribute01List.Add(attribute01OfResource)
+            End If
+            resourcesLoopStart = resourcesLoopStart + 1
+        Loop While resourcesLoopStart <= resourceCount
+
+        attribute01List = attribute01List.Distinct.ToList()
+        K202_CustomSchedulingWindowForm.ComboBox1.DataSource = attribute01List
+        'Get attribute01 list in resource table
+        K202_CustomSchedulingWindowForm.clickedShowCavity_01Btn = False
+        K202_CustomSchedulingWindowForm.ShowDialog()
+        AddHandler K202_CustomSchedulingWindowForm.Button1.Click, AddressOf K202_CustomSchedulingWindowForm.Button1_Click
+        Try
+            If K202_CustomSchedulingWindowForm.clickedShowCavity_01Btn = True Then
+                Dim selectedAttribute01 As String = K202_CustomSchedulingWindowForm.selectedAttribute01
+
+                Dim resourceList As New List(Of String)
+                Dim resourceLoopStart2 As Integer = 1
+                Do
+                    Dim attribute01OfResource As String = preactor.ReadFieldString("Resources", "Attribute 1", resourceLoopStart2)
+                    If attribute01OfResource = selectedAttribute01 Then
+                        Dim resourceName As String = preactor.ReadFieldString("Resources", "Name", resourceLoopStart2)
+                        If Not resourceName.Contains("TABLES") Then
+                            resourceList.Add(resourceName)
+                        End If
+                    End If
+                        resourceLoopStart2 = resourceLoopStart2 + 1
+                Loop While resourceLoopStart2 <= resourceCount
+
+                Dim dt As DataTable = New DataTable()
+                dt.Columns.Add(New DataColumn("Resources", Type.[GetType]("System.String")))
+                Dim dt_row As DataRow
+                For Each element In resourceList
+                    dt_row = dt.NewRow()
+                    dt_row("Resources") = element
+                    dt.Rows.Add(dt_row)
+                Next
+                dt.Columns.Add(New DataColumn("Mold Set 01", Type.[GetType]("System.String")))
+                dt.Columns.Add(New DataColumn("Mold Set 02", Type.[GetType]("System.String")))
+
+                K202_CustomSchedulingWindowSecondPartForm.dataTable = dt
+                K202_CustomSchedulingWindowSecondPartForm.ShowDialog()
+
+                Try
+                    If K202_CustomSchedulingWindowSecondPartForm.okBtnClicked = True Then
+
+                        For c As Integer = 0 To dt.Columns.Count - 1
+                            If dt.Columns(c).ColumnName = "Mold Set 01" Then
+                                For e As Integer = 0 To dt.Rows.Count - 1
+                                    Dim userEnteredProductName As String = dt.Rows(e)("Mold Set 01").ToString()
+                                    Dim selectedResourceName As String = dt.Rows(e)("Resources").ToString
+
+                                    Dim ordersLoopStart2 As Integer = 1
+                                    Dim priorityValue As Integer = 1
+                                    Do
+                                        Dim orderProductName As String = preactor.ReadFieldString("Orders", "Product", ordersLoopStart2)
+                                        If orderProductName = userEnteredProductName Then
+                                            Dim unscheduleOrder As String = preactor.ReadFieldString("Orders", "Resource", ordersLoopStart2)
+                                            Dim opNoOfOrder As Integer = preactor.ReadFieldInt("Orders", "Op. No.", ordersLoopStart2)
+
+                                            If unscheduleOrder = "Unspecified" And opNoOfOrder = 20 Then
+                                                preactor.WriteField("Orders", "Priority", ordersLoopStart2, priorityValue)
+                                                preactor.WriteField("Orders", "Required Resource", ordersLoopStart2, selectedResourceName)
+                                                priorityValue = priorityValue + 2
+                                            End If
+
+                                            If unscheduleOrder = "Unspecified" And opNoOfOrder = 40 Then
+                                                preactor.WriteField("Orders", "Required Resource", ordersLoopStart2, selectedResourceName)
+                                                Dim priorityOfOpNo40 As Integer = preactor.ReadFieldInt("Orders", "Priority", ordersLoopStart2)
+                                                preactor.WriteField("Orders", "String Attribute 5", ordersLoopStart2, "Mold_Set_01_" & priorityOfOpNo40)
+                                            End If
+
+                                        End If
+                                        ordersLoopStart2 = ordersLoopStart2 + 1
+                                    Loop While ordersLoopStart2 <= ordersCount
+                                Next
+                            End If
+
+                            If dt.Columns(c).ColumnName = "Mold Set 02" Then
+                                For e As Integer = 0 To dt.Rows.Count - 1
+                                    Dim userEnteredProductName As String = dt.Rows(e)("Mold Set 02").ToString()
+                                    Dim selectedResourceName As String = dt.Rows(e)("Resources").ToString
+
+                                    Dim ordersLoopStart2 As Integer = 1
+                                    Dim priorityValue As Integer = 2
+                                    Do
+                                        Dim orderProductName As String = preactor.ReadFieldString("Orders", "Product", ordersLoopStart2)
+                                        If orderProductName = userEnteredProductName Then
+                                            Dim unscheduleOrder As String = preactor.ReadFieldString("Orders", "Resource", ordersLoopStart2)
+                                            Dim opNoOfOrder As Integer = preactor.ReadFieldInt("Orders", "Op. No.", ordersLoopStart2)
+                                            If unscheduleOrder = "Unspecified" And opNoOfOrder = 20 Then
+                                                preactor.WriteField("Orders", "Priority", ordersLoopStart2, priorityValue)
+                                                priorityValue = priorityValue + 2
+                                            End If
+
+                                            If unscheduleOrder = "Unspecified" And opNoOfOrder = 40 Then
+                                                preactor.WriteField("Orders", "Required Resource", ordersLoopStart2, selectedResourceName)
+                                                Dim priorityOfOpNo40 As Integer = preactor.ReadFieldInt("Orders", "Priority", ordersLoopStart2)
+                                                preactor.WriteField("Orders", "String Attribute 5", ordersLoopStart2, "Mold_Set_02_" & priorityOfOpNo40)
+                                            End If
+
+                                        End If
+                                        ordersLoopStart2 = ordersLoopStart2 + 1
+                                    Loop While ordersLoopStart2 <= ordersCount
+                                Next
+                            End If
+                        Next
+
+
+                    End If
+                Catch ex As Exception
+
+                End Try
+
+            End If
+        Catch ex As Exception
+
+        End Try
+
+    End Function
 
 End Class
 
