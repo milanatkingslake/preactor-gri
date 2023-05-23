@@ -5,6 +5,7 @@ Imports System.Data.Common
 Imports System.Data.SqlClient
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Runtime.InteropServices.ComTypes
 Imports System.Text
 Imports System.Windows.Forms
 Imports Preactor
@@ -2832,29 +2833,23 @@ Public Class CustomAction
 
         strPath = strPathO + "\locked.tmp"
         If File.Exists(strPath) Then
-            ''MsgBox("File has " + strPath)
 
             Try
-                preactor.SetShellVariable("K202_IsMemoryEditMode", 1)
+                preactor.SetShellVariable("K202_IsMemoryEditMode", 0)
 
-                File.Copy(strPath, "DumyLock.tmp")
-                strPath = strPathO + "\DumyLock.tmp"
-                File.OpenRead(strPath)
+                Using fs = New FileStream(strPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+                    Using sr = New StreamReader(fs, Encoding.Default)
+                        strLockUser = sr.ReadToEnd()
+                        If (strLockUser <> strCurrentUser) Then
+                            MsgBox("You can't Execute the process,because '" + strLockUser + "' User is accessing the system")
+                            preactor.SetShellVariable("K202_IsMemoryEditMode", 1)
+                            'MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
+                        End If
+                    End Using
+                End Using
 
-                For Each line As String In File.ReadLines(strPath)
-                    strLockUser = line
-                    'MsgBox(strLockUser)
-                    'MsgBox(strCurrentUser)
-                    If (strLockUser = strCurrentUser) Then
-                        ''MsgBox("You can't Execute the process,because '" + strLockUser + "' User is accessing the system")
-                        MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
-                        File.Delete(strPath)
-                    End If
-                Next
-                File.Delete(strPath)
             Catch ex As Exception
-                MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
-
+                ''MsgBox(preactor.GetShellVariable("K202_IsMemoryEditMode"))
                 MsgBox("Error " + ex.Message)
 
             End Try
@@ -3005,6 +3000,7 @@ Public Class CustomAction
         preactor.Commit("Orders")
         Return 0
     End Function
+
 
     'Code backup 2023/05/23
 
@@ -3165,6 +3161,7 @@ Public Class CustomAction
     '    preactor.Commit("Orders")
     '    Return 0
     'End Function
+
     ''Sahan added K202_CustomSchedulingWindowFunction
 
     Function K202_CustomSchedulingWindowFunction(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
