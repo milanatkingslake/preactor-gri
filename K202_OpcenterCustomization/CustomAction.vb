@@ -3165,7 +3165,7 @@ Public Class CustomAction
     '    preactor.Commit("Orders")
     '    Return 0
     'End Function
-
+    ''Sahan added K202_CustomSchedulingWindowFunction
     Function K202_CustomSchedulingWindowFunction(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
         Dim K202_CustomSchedulingWindowForm As New K202_CustomSchedulingWindow()
