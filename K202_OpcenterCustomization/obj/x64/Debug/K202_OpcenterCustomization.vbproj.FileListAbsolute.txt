@@ -142,3 +142,5 @@ C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomiza
 C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.pdb
 C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.K202_CustomSchedulingWindow.resources
 C:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.K202_CustomSchedulingWindowSecondPart.resources
+D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.K202_CustomSchedulingWindowSecondPart.resources
+D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.K202_CustomSchedulingWindow.resources

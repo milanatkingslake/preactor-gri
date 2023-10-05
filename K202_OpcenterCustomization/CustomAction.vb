@@ -1448,7 +1448,7 @@ Public Class CustomAction
 
         End Try
     End Function
-
+    ''Befor Milan Modification 20231003
     Function ForceInsideAndOutsideFunction(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef orderNumber As Integer) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
         Dim recordNumber As Integer = orderNumber
@@ -1516,7 +1516,94 @@ Public Class CustomAction
         preactor.Commit("Orders")
         Return 0
     End Function
+    ''Befor Milan Modification 20231003 End
 
+    ''After Milan Modification 20231003
+    Function ForceInsideAndOutsideFunctionBulk(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef orderNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim forceInsideOutsideLookAheadWindowInDays As Integer = preactor.ReadFieldInt("K202_Parameters", "ForceInsideOutsideLookAheadWindowInDays", 1)
+
+        Dim recordNumber As Integer = orderNumber
+        Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", recordNumber)
+        Dim operationNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", recordNumber)
+        Dim strBelongsToOrderNo As String = preactor.ReadFieldString("Orders", "Belongs to Order No.", recordNumber)
+
+        Dim erpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", recordNumber)
+        Dim partNo As String = preactor.ReadFieldString("Orders", "Part No.", recordNumber)
+        Dim startTime As String = preactor.ReadFieldString("Orders", "Start Time", recordNumber)
+
+        Dim num As Integer = preactor.RecordCount("Orders")
+
+        Dim i As Integer = 1
+        Do
+            Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+            Dim newErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", i)
+            Dim newPartNo As String = preactor.ReadFieldString("Orders", "Part No.", i)
+            Dim newStartTime As DateTime = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+
+
+            If newOrderNmb = orderNo Then
+                Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+
+                If OperationName = "ST1-OUTSIDE CURING" Then
+                    Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+                    Dim j As Integer = 1
+
+                    If OperationNoOfOutsideCuring = 50 Then
+                        Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
+                        Do
+                            Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
+                            Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
+                            Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
+
+                            Dim secondNewErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", j)
+                            Dim secondNewPartNo As String = preactor.ReadFieldString("Orders", "Part No.", j)
+                            Dim secondNewStartTime As DateTime = preactor.ReadFieldDateTime("Orders", "Start Time", j)
+
+
+                            ''If secondNewOrderNmb = newOrderNmb Then ''old conndition
+
+                            If (newErpOrderNo = secondNewErpOrderNo) And (secondNewPartNo = secondNewPartNo) And (newStartTime < secondNewStartTime) And (secondNewStartTime <= DateAdd(DateInterval.Month, forceInsideOutsideLookAheadWindowInDays * 24, newStartTime)) Then
+
+
+                                If secondOperationName = "ST1-COMPRESSION CURING" Then
+                                    Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
+                                    If toggleAttributeOne = 0 Then
+
+                                        Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
+                                        preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
+                                        preactor.Commit("Orders")
+                                        preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                        ''MsgBox("Operation Forced inside")
+                                        preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
+                                        preactor.WriteField("Orders", "Disable Operation", i, 1)
+                                    ElseIf toggleAttributeOne = 1 Then
+                                        Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
+                                        preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
+                                        preactor.Commit("Orders")
+                                        preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                        ''MsgBox("Operation Forced outside")
+                                        preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
+                                        preactor.WriteField("Orders", "Disable Operation", i, 0)
+                                    End If
+
+                                End If
+
+                            End If
+                            j = j + 1
+                        Loop While j <= num
+                    Else
+                        MsgBox("Operation No. of that outside curing is not 50")
+                    End If
+                    Exit Do
+                End If
+            End If
+            i = i + 1
+        Loop While i <= num
+        preactor.Commit("Orders")
+        Return 0
+    End Function
+    ''After Milan Modification 20231003 End
     Function ForceInsideAndOutsideFunctionForMultipleRecords(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
         Dim planningboard As IPlanningBoard = preactor.PlanningBoard
