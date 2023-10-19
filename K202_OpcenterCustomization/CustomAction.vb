@@ -1540,6 +1540,7 @@ Public Class CustomAction
             Dim newErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", i)
             Dim newPartNo As String = preactor.ReadFieldString("Orders", "Part No.", i)
             Dim newStartTime As DateTime = preactor.ReadFieldDateTime("Orders", "Start Time", i)
+            Dim newResource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
 
 
             If newOrderNmb = orderNo Then
@@ -1559,11 +1560,12 @@ Public Class CustomAction
                             Dim secondNewErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", j)
                             Dim secondNewPartNo As String = preactor.ReadFieldString("Orders", "Part No.", j)
                             Dim secondNewStartTime As DateTime = preactor.ReadFieldDateTime("Orders", "Start Time", j)
+                            Dim secondNewResource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
 
 
                             ''If secondNewOrderNmb = newOrderNmb Then ''old conndition
 
-                            If (newErpOrderNo = secondNewErpOrderNo) And (secondNewPartNo = secondNewPartNo) And (newStartTime < secondNewStartTime) And (secondNewStartTime <= DateAdd(DateInterval.Month, forceInsideOutsideLookAheadWindowInDays * 24, newStartTime)) Then
+                            If (newErpOrderNo = secondNewErpOrderNo) And (newResource = secondNewResource) And (secondNewPartNo = secondNewPartNo) And (newStartTime < secondNewStartTime) And (secondNewStartTime <= DateAdd(DateInterval.Month, forceInsideOutsideLookAheadWindowInDays * 24, newStartTime)) Then
 
 
                                 If secondOperationName = "ST1-COMPRESSION CURING" Then
