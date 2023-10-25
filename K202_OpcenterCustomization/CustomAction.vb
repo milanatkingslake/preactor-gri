@@ -1612,80 +1612,76 @@ Public Class CustomAction
     Function ForceInsideMultipleSelection(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
         Dim planningboard As IPlanningBoard = preactor.PlanningBoard
-
+        'Dim result As DialogResult = MessageBox.Show("Confirm to proceed..", "Confirmation", MessageBoxButtons.YesNo)
+        'If result = DialogResult.Yes Then
         Dim num As Integer = preactor.RecordCount("Orders")
+            Dim s As Integer = 1
+            Do
+                If (planningboard.GetOperationLocateState(s)) Then
+                    Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
+                    '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
 
-        Dim s As Integer = 1
-        Do
-            If (planningboard.GetOperationLocateState(s)) Then
-                Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
-                '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
+                    Dim i As Integer = 1
+                    Do
+                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                        If newOrderNmb = orderNo Then
+                            Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
 
-                Dim i As Integer = 1
-                Do
-                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                    If newOrderNmb = orderNo Then
-                        Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+                            If OperationName = "ST1-OUTSIDE CURING" Then
+                                Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+                                Dim j As Integer = 1
 
-                        If OperationName = "ST1-OUTSIDE CURING" Then
-                            Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
-                            Dim j As Integer = 1
-
-                            If OperationNoOfOutsideCuring = 50 Then
-                                Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
-                                Do
-                                    Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
-                                    Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
-                                    Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
-                                    If secondNewOrderNmb = newOrderNmb Then
+                                If OperationNoOfOutsideCuring = 50 Then
+                                    Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
+                                    Do
+                                        Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
+                                        Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
+                                        Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
+                                        If secondNewOrderNmb = newOrderNmb Then
 
 
-                                        If secondOperationName = "ST1-COMPRESSION CURING" Then
-                                            Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
-                                            If toggleAttributeOne = 0 Then
+                                            If secondOperationName = "ST1-COMPRESSION CURING" Then
+                                                Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
+                                                If toggleAttributeOne = 0 Then
 
-                                                Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
-                                                preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
-                                                preactor.Commit("Orders")
-                                                preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                ''MsgBox("Operation Forced inside")
-                                                preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
-                                                preactor.WriteField("Orders", "Disable Operation", i, 1)
-                                                'ElseIf toggleAttributeOne = 1 Then
-                                                '    Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
-                                                '    preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
-                                                '    preactor.Commit("Orders")
-                                                '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                '    MsgBox("Operation Forced outside")
-                                                '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
-                                                '    preactor.WriteField("Orders", "Disable Operation", i, 0)
+                                                    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
+                                                    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
+                                                    preactor.Commit("Orders")
+                                                    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                    ''MsgBox("Operation Forced inside")
+                                                    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
+                                                    preactor.WriteField("Orders", "Disable Operation", i, 1)
+                                                    'ElseIf toggleAttributeOne = 1 Then
+                                                    '    Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
+                                                    '    preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
+                                                    '    preactor.Commit("Orders")
+                                                    '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                    '    MsgBox("Operation Forced outside")
+                                                    '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
+                                                    '    preactor.WriteField("Orders", "Disable Operation", i, 0)
+                                                End If
+
                                             End If
 
                                         End If
-
-                                    End If
-                                    j = j + 1
-                                Loop While j <= num
-                            Else
-                                MsgBox("Operation No. of that outside curing is not 50")
+                                        j = j + 1
+                                    Loop While j <= num
+                                Else
+                                    MsgBox("Operation No. of that outside curing is not 50")
+                                End If
+                                Exit Do
+                            ElseIf OperationName = "ST1-DUMMY OPERATION" Then
+                                preactor.WriteField("Orders", "Disable Operation", i, 1)
                             End If
-                            Exit Do
                         End If
-                    End If
-                    i = i + 1
-                Loop While i <= num
+                        i = i + 1
+                    Loop While i <= num
 
-            End If
-            s = s + 1
-        Loop While s <= num
-
-
-        '    End If
-        '    y = y + 1
-        'Loop While y <= num
-
-
-        preactor.Commit("Orders")
+                End If
+                s = s + 1
+            Loop While s <= num
+            preactor.Commit("Orders")
+        ''End If
         Return 0
     End Function
 
@@ -1694,79 +1690,79 @@ Public Class CustomAction
         Dim planningboard As IPlanningBoard = preactor.PlanningBoard
 
         Dim num As Integer = preactor.RecordCount("Orders")
-
+        'Dim result As DialogResult = MessageBox.Show("Confirm to proceed..", "Confirmation", MessageBoxButtons.YesNo)
+        'If result = DialogResult.Yes Then
         Dim s As Integer = 1
-        Do
-            If (planningboard.GetOperationLocateState(s)) Then
-                Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
-                '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
+            Do
+                If (planningboard.GetOperationLocateState(s)) Then
+                    Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
+                    '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
 
-                Dim i As Integer = 1
-                Do
-                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                    If newOrderNmb = orderNo Then
-                        Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+                    Dim i As Integer = 1
+                    Do
+                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                        If newOrderNmb = orderNo Then
+                            Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
 
-                        If OperationName = "ST1-OUTSIDE CURING" Then
-                            Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
-                            Dim j As Integer = 1
+                            If OperationName = "ST1-OUTSIDE CURING" Then
+                                Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+                                Dim j As Integer = 1
 
-                            If OperationNoOfOutsideCuring = 50 Then
-                                Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
-                                Do
-                                    Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
-                                    Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
-                                    Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
-                                    If secondNewOrderNmb = newOrderNmb Then
+                                If OperationNoOfOutsideCuring = 50 Then
+                                    Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
+                                    Do
+                                        Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
+                                        Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
+                                        Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
+                                        If secondNewOrderNmb = newOrderNmb Then
 
 
-                                        If secondOperationName = "ST1-COMPRESSION CURING" Then
-                                            Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
-                                            'If toggleAttributeOne = 0 Then
+                                            If secondOperationName = "ST1-COMPRESSION CURING" Then
+                                                Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
+                                                'If toggleAttributeOne = 0 Then
 
-                                            '    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
-                                            '    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
-                                            '    preactor.Commit("Orders")
-                                            '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                            '    MsgBox("Operation Forced inside")
-                                            '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
-                                            '    preactor.WriteField("Orders", "Disable Operation", i, 1)
-                                            'Else
-                                            If toggleAttributeOne = 1 Then
+                                                '    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
+                                                '    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
+                                                '    preactor.Commit("Orders")
+                                                '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                '    MsgBox("Operation Forced inside")
+                                                '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
+                                                '    preactor.WriteField("Orders", "Disable Operation", i, 1)
+                                                'Else
+                                                If toggleAttributeOne = 1 Then
                                                     Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
                                                     preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
                                                     preactor.Commit("Orders")
                                                     preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                '' MsgBox("Operation Forced outside")
-                                                preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
+                                                    '' MsgBox("Operation Forced outside")
+                                                    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
                                                     preactor.WriteField("Orders", "Disable Operation", i, 0)
                                                 End If
 
                                             End If
 
-                                    End If
-                                    j = j + 1
-                                Loop While j <= num
-                            Else
-                                MsgBox("Operation No. of that outside curing is not 50")
+                                        End If
+                                        j = j + 1
+                                    Loop While j <= num
+                                Else
+                                    MsgBox("Operation No. of that outside curing is not 50")
+                                End If
+                                Exit Do
+                            ElseIf OperationName = "ST1-DUMMY OPERATION" Then
+                                preactor.WriteField("Orders", "Disable Operation", i, 0)
                             End If
-                            Exit Do
                         End If
-                    End If
-                    i = i + 1
-                Loop While i <= num
+                        i = i + 1
+                    Loop While i <= num
 
-            End If
-            s = s + 1
-        Loop While s <= num
+                End If
+                s = s + 1
+            Loop While s <= num
+            preactor.Commit("Orders")
+        'ElseIf result = DialogResult.No Then
+        '    MessageBox.Show("No pressed")
+        ''End If
 
-
-        '    End If
-        '    y = y + 1
-        'Loop While y <= num
-
-
-        preactor.Commit("Orders")
         Return 0
     End Function
 
