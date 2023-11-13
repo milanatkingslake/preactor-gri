@@ -3550,6 +3550,63 @@ Public Class CustomAction
 
     End Function
 
+    Function K202_DragBlock(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef RecordNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+        Dim customClickTime As DateTime
+        customClickTime = planningboard.CustomClickTime
+
+        Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", RecordNumber)
+        Dim opNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", RecordNumber)
+        Dim setupTime As Date = preactor.ReadFieldDateTime("Orders", "Setup Start", RecordNumber)
+        Dim startDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", RecordNumber)
+
+        Dim resource As String = preactor.ReadFieldString("Orders", "Resource", RecordNumber)
+        Dim newRecord As Integer = preactor.CreateRecord("K202_DragDropTemp")
+        ''Dim newRecordNum As Integer = preactor.ReadFieldInt("K202_DragDropTemp", "RecordId", newRecord)
+        preactor.WriteField("K202_DragDropTemp", "Order No.", newRecord, orderNo)
+        preactor.WriteField("K202_DragDropTemp", "Op. No.", newRecord, opNo)
+        preactor.WriteField("K202_DragDropTemp", "Resource", newRecord, resource)
+        preactor.WriteField("K202_DragDropTemp", "Setup Start", newRecord, setupTime)
+        preactor.WriteField("K202_DragDropTemp", "Start Time", newRecord, startDate)
+
+
+        preactor.Commit("K202_DragDropTemp")
+
+        Return 0
+    End Function
+
+    Function K202_DropBlock(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef RecordNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+        Dim dropStartDate As Date = preactor.ReadFieldDateTime("Orders", "Start Time", RecordNumber)
+        Dim dropSetupDate As Date = preactor.ReadFieldDateTime("Orders", "Setup Time", RecordNumber)
+        Dim dropResource As Integer = preactor.ReadFieldInt("Orders", "Resource", RecordNumber)
+
+        Dim dragResource As String = preactor.ReadFieldString("K202_DragDropTemp", "Resource", 1)
+        Dim dragSetupStart As Date = preactor.ReadFieldDateTime("K202_DragDropTemp", "Setup Start", 1)
+
+        Dim previousOperation As Integer = planningboard.GetResourcesCurrentOperation(dropResource, dragSetupStart, 1)
+        ''Dim resourceNext As Integer = planningboard.GetResourceNumber(dropResource.ToString())
+        If previousOperation > 0 Then
+            Dim previousOperationEndTime As Date = Preactor.ReadFieldDateTime("Orders", "End Time", previousOperation)
+            Dim nextOperation As Integer = planningboard.GetResourcesNextOperation(dropResource, dragSetupStart)
+            ''Dim nextOperation As Integer = planningboard.GetResourcesNextOperation(planningboard.GetResourceNumber(dropResource.ToString()), dragSetupStart)
+
+            Dim nextOperationstartTime As Date = Preactor.ReadFieldDateTime("Orders", "Setup Time", RecordNumber)
+
+            planningboard.PutOperationOnResource(nextOperation, dropResource, previousOperationEndTime)
+
+            Preactor.DeleteRecord("K202_DragDropTemp", 1)
+            Preactor.Commit("K202_DragDropTemp")
+
+            Preactor.Redraw()
+        End If
+
+        Return 0
+    End Function
+
 End Class
 
 
