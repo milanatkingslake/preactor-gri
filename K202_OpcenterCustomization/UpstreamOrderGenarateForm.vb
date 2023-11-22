@@ -5,6 +5,7 @@ Public Class UpstreamOrderGenarateForm
 
     Private Sub btn_Genarate_Click(sender As Object, e As EventArgs) Handles btn_Genarate.Click
         Try
+            btn_Genarate.Enabled = False
             Dim connection As SqlConnection
             Dim adapter As SqlDataAdapter
             Dim command As New SqlCommand
@@ -15,6 +16,7 @@ Public Class UpstreamOrderGenarateForm
             command.Connection = connection
             command.CommandType = CommandType.StoredProcedure
             command.CommandText = "K202_GenarateUpstreamOrder_Sp"
+            command.CommandTimeout = 300
             Dim param As SqlParameter
 
             param = New SqlParameter("@StartTime", DateTime_Start.Text)
@@ -37,7 +39,7 @@ Public Class UpstreamOrderGenarateForm
             End If
             connection.Close()
         Catch ex As Exception
-            MsgBox("Orders genarate error",, "error")
+            MsgBox("Orders genarate error" + ex.Message,, "error")
             ''MsgBox(ex.Message)
         Finally
 
