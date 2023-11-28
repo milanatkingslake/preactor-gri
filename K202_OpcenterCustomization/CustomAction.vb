@@ -1250,33 +1250,42 @@ Public Class CustomAction
             End If
         ElseIf strOrderOprName.Contains("ST1") Then
 
-            Dim k As Integer = 1
-            Dim max As Integer = 1
-            'Dim K202_ErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", RecordNumber)
+            '' Milan Amarasooriya 20231128
+            '' Get Last Serial Number from K202_OrderManagementDetails table Milan Amarasooriya 20231128
+            Dim newOrderSerial As Integer = preactor.ReadFieldInt("K202_OrderManagementDetails", "InitValue", 1)
+            newOrderSerial = newOrderSerial + 1
+            '' Milan Amarasooriya 20231128
+            '' Get Last Serial Number from K202_OrderManagementDetails tableEnd
+
+            'Dim k As Integer = 1
+            'Dim max As Integer = 1
+            ''Dim K202_ErpOrderNo As String = preactor.ReadFieldString("Orders", "K202_ErpOrderNo", RecordNumber)
             Dim K202_APSParentNumber As String = preactor.ReadFieldString("Orders", "K202_APSParentNumber", RecordNumber)
-            Do
+            'Do
 
-                Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", k)
-                Dim strFirstFourLetters As String = newOrderNmb.Substring(0, 3)
-                If strFirstFourLetters = strOrderNo.Substring(0, 3) Then
-                    Dim lengthOfOrderNmb As Integer = strOrderNo.Length
-                    Dim lastFourCharacters As String = newOrderNmb.Substring(lengthOfOrderNmb - 3, 3)
-                    Dim lastFourCharactersToInteger As Integer = Convert.ToInt32(lastFourCharacters)
-                    If lastFourCharactersToInteger >= max Then
-                        max = lastFourCharactersToInteger
-                    End If
-                End If
+            '    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", k)
+            '    Dim strFirstFourLetters As String = newOrderNmb.Substring(0, 3)
+            '    If strFirstFourLetters = strOrderNo.Substring(0, 3) Then
+            '        Dim lengthOfOrderNmb As Integer = strOrderNo.Length
+            '        Dim lastFourCharacters As String = newOrderNmb.Substring(lengthOfOrderNmb - 3, 3)
+            '        Dim lastFourCharactersToInteger As Integer = Convert.ToInt32(lastFourCharacters)
+            '        If lastFourCharactersToInteger >= max Then
+            '            max = lastFourCharactersToInteger
+            '        End If
+            '    End If
 
-                k = k + 1
-            Loop While k <= num
+            '    k = k + 1
+            'Loop While k <= num
 
             Dim strNewOrderNo As String = ""
             Dim decimalLength As Integer
             decimalLength = 3
-            Dim newOrderNo As String = strOrderNo.Substring(0, 2)
+            Dim newOrderNo As String = strOrderNo.Substring(0, 8)
 
-            Dim maxStr As String = (max + 1).ToString("D" + decimalLength.ToString())
+            ''Dim maxStr As String = (newOrderSerial + 1).ToString("D" + decimalLength.ToString())
+            Dim maxStr As String = newOrderSerial.ToString("000000")
             strNewOrderNo = newOrderNo + maxStr
+            preactor.WriteField("K202_OrderManagementDetails", "InitValue", 1, newOrderSerial)
 
             Dim i As Integer = 1
             Dim oForm As New K202_JobSplitDetails()
