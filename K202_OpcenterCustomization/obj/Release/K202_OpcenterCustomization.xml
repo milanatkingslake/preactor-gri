@@ -6,6 +6,22 @@ K202_OpcenterCustomization
 </name>
 </assembly>
 <members>
+<member name="T:K202_OpcenterCustomization.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:K202_OpcenterCustomization.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:K202_OpcenterCustomization.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
 <member name="M:K202_OpcenterCustomization.CustomAction.FormDataLoad(Preactor.Interop.PreactorObject.PreactorObj@,System.Object@)">
 =======================Shreyas==========================================
 </member>

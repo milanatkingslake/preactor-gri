@@ -2930,14 +2930,88 @@ Public Class CustomAction
             Dim StartDate As DateTime = preactor.ReadFieldDateTime("Orders", "Setup Start", recordNumber)
             Dim EndDate As DateTime = preactor.ReadFieldDateTime("Orders", "Start Time", recordNumber)
             Dim planningboard As IPlanningBoard = preactor.PlanningBoard
-            planningboard.CreatePrimaryCalendarException(resource, StartDate, EndDate, "Off Shift")
+            ''planningboard.CreatePrimaryCalendarException(resource, StartDate, EndDate, "Test_1")
+
+            '' Milan Amarasooriya 20231201 
+            Dim strAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", resource)
+
+            Dim ordersCount As Integer = preactor.RecordCount("Resources")
+            Dim i As Integer = 1
+            Do
+                Dim TempAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", i)
+                Dim resourceRecordNum As Integer = preactor.ReadFieldInt("Resources", "Number", i)
+
+                If TempAttribute_1 = strAttribute_1 And resource <> resourceRecordNum Then
+                    planningboard.CreatePrimaryCalendarException(resourceRecordNum, StartDate, EndDate, "Test_1")
+                    ''planningboard.cal(resourceRecordNum, StartDate, EndDate, "Test_1")
+
+                End If
+                preactor.Commit("Orders")
+
+                i = i + 1
+            Loop While i <= ordersCount
+
+            Dim prevop As Integer = planningboard.GetResourcesPreviousOperation(resource, StartDate.AddSeconds(1))
+
+            '' Milan Amarasooriya 20231201 End 
+
+
             preactor.Redraw()
         Catch ex As Exception
             'MsgBox(ex.Message)
         End Try
 
     End Function
+    Public Function DeleteCalendarExceptionByResource(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef recordNumber As Integer) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
 
+        Try
+            Dim num As Integer = preactor.RecordCount("Orders")
+            Dim connetionString As String = preactor.ParseShellString("{DB CONNECT STRING}")
+            Dim strResource As String = preactor.ReadFieldString("Orders", "Resource", recordNumber)
+
+            If Not strResource = "" Then
+                K201_DeleteCalendarExceptionByResource(connetionString, CStr(strResource))
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+    End Function
+    Public Function K201_DeleteCalendarExceptionByResource(ByRef connetionString As String, ByRef resource As String) As Decimal
+
+        Try
+            Dim connection As SqlConnection
+            Dim adapter As SqlDataAdapter
+            Dim command As New SqlCommand
+
+            connection = New SqlConnection(connetionString)
+
+            connection.Open()
+            command.Connection = connection
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "K201_DeleteCalendarException_Sp"
+            command.CommandTimeout = 600
+
+            Dim param As SqlParameter
+
+            param = New SqlParameter("@Resource", resource)
+            param.Direction = ParameterDirection.Input
+            param.DbType = DbType.String
+            command.Parameters.Add(param)
+
+            adapter = New SqlDataAdapter(command)
+            command.ExecuteNonQuery()
+
+            connection.Close()
+        Catch ex As Exception
+            MsgBox("Delete calendar exception error",, "error")
+        Finally
+
+        End Try
+
+    End Function
     Public Function RemoveCalendarPeriods(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object, ByRef recordNumber As Integer) As Integer
         Try
             Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
