@@ -1284,72 +1284,76 @@ Public Class CustomAction
 
             ''Dim maxStr As String = (newOrderSerial + 1).ToString("D" + decimalLength.ToString())
             Dim maxStr As String = newOrderSerial.ToString("000000")
-            strNewOrderNo = newOrderNo + maxStr
+            strNewOrderNo = newOrderNo +"-"+ maxStr
             preactor.WriteField("K202_OrderManagementDetails", "InitValue", 1, newOrderSerial)
 
+            'Dim numericalAttribute_6 As Double = preactor.ReadFieldDouble("Orders", "Numerical Attribute 6", RecordNumber)
+            'If numericalAttribute_6 > 0 And decOrderQty > numericalAttribute_6 Then
+            '    decOrderQty = decOrderQty - numericalAttribute_6
+            'End If
             Dim i As Integer = 1
-            Dim oForm As New K202_JobSplitDetails()
-            oForm.strJobOrderNo = strNewOrderNo
-            oForm.decJobOrderQty = decOrderQty
-            oForm.isOkClick = False
+                Dim oForm As New K202_JobSplitDetails()
+                oForm.strJobOrderNo = strNewOrderNo
+                oForm.decJobOrderQty = decOrderQty
+                oForm.isOkClick = False
 
-            '' Open the windows form (K203_JobSplitDetails)
-            oForm.ShowDialog()
+                '' Open the windows form (K203_JobSplitDetails)
+                oForm.ShowDialog()
 
-            If oForm.isOkClick = True Then
+                If oForm.isOkClick = True Then
 
-                Dim x As Integer = 1
-                Dim belongsToOrderNo As Integer
-                Do
-                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                    If newOrderNmb = strOrderNo Then
+                    Dim x As Integer = 1
+                    Dim belongsToOrderNo As Integer
+                    Do
+                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                        If newOrderNmb = strOrderNo Then
 
-                        Try
-                            If Not oForm.JobQtyTxt.Text = "" Then
+                            Try
+                                If Not oForm.JobQtyTxt.Text = "" Then
 
-                                decNewOrderQty = CDec(oForm.JobQtyTxt.Text)
-                                decBalanceOrderQty = decOrderQty - decNewOrderQty
-                                Dim j As Integer = 0
+                                    decNewOrderQty = CDec(oForm.JobQtyTxt.Text)
+                                    decBalanceOrderQty = decOrderQty - decNewOrderQty
+                                    Dim j As Integer = 0
 
-                                Dim newBlock As Integer = preactor.CreateRecord("Orders")
-                                Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
+                                    Dim newBlock As Integer = preactor.CreateRecord("Orders")
+                                    Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
 
-                                preactor.CopyRecord("Orders", i, newBlock)
+                                    preactor.CopyRecord("Orders", i, newBlock)
 
-                                preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
-                                preactor.WriteField("Orders", "Order No.", newBlock, strNewOrderNo)
-                                preactor.WriteField("Orders", "Quantity", newBlock, decNewOrderQty)
-                                preactor.WriteField("Orders", "Selected Constraint 1", newBlock, -1)
-                                preactor.WriteField("Orders", "Mid Batch Quantity", newBlock, 0)
-                                preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, K202_APSParentNumber)
-                                preactor.WriteField("Orders", "Order Type", newBlock, "SPLIT")
-                                If x = 1 Then
-                                    belongsToOrderNo = newRecordNum
-                                    x = x + 1
-                                Else
-                                    preactor.WriteField("Orders", "Belongs to Order No.", newBlock, belongsToOrderNo)
+                                    preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
+                                    preactor.WriteField("Orders", "Order No.", newBlock, strNewOrderNo)
+                                    preactor.WriteField("Orders", "Quantity", newBlock, decNewOrderQty)
+                                    preactor.WriteField("Orders", "Selected Constraint 1", newBlock, -1)
+                                    preactor.WriteField("Orders", "Mid Batch Quantity", newBlock, 0)
+                                    preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, K202_APSParentNumber)
+                                    preactor.WriteField("Orders", "Order Type", newBlock, "SPLIT")
+                                    If x = 1 Then
+                                        belongsToOrderNo = newRecordNum
+                                        x = x + 1
+                                    Else
+                                        preactor.WriteField("Orders", "Belongs to Order No.", newBlock, belongsToOrderNo)
+                                    End If
+                                    '' Update the resource for splited job -03-04-2022
+                                    preactor.WriteField("Orders", "Resource", newBlock, strSplitJobResource)
+                                    Dim strPartNo As String = preactor.ReadFieldString("Orders", "Part No.", RecordNumber)
+                                    Dim intOPNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", RecordNumber)
+                                    preactor.WriteField("Orders", "Quantity", i, decBalanceOrderQty)
+                                    preactor.Commit("Orders")
                                 End If
-                                '' Update the resource for splited job -03-04-2022
-                                preactor.WriteField("Orders", "Resource", newBlock, strSplitJobResource)
-                                Dim strPartNo As String = preactor.ReadFieldString("Orders", "Part No.", RecordNumber)
-                                Dim intOPNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", RecordNumber)
-                                preactor.WriteField("Orders", "Quantity", i, decBalanceOrderQty)
-                                preactor.Commit("Orders")
-                            End If
-                        Catch ex As Exception
+                            Catch ex As Exception
 
-                        End Try
-                    End If
-                    i = i + 1
-                Loop While i <= num
+                            End Try
+                        End If
+                        i = i + 1
+                    Loop While i <= num
+                End If
+
+                preactor.Commit("Orders")
             End If
 
-            preactor.Commit("Orders")
-        End If
 
 
-
-        Return 0
+            Return 0
     End Function
 
     Public Function GetOrderSerialSeq(ByRef connetionString As String, ByRef strOrderNo As String) As Integer
@@ -3689,6 +3693,189 @@ Public Class CustomAction
 
         Return 0
     End Function
+
+
+    Private pr As IPreactor
+    Private pb As IPlanningBoard
+    Private dict_mould_resrecord As Dictionary(Of Integer, Integer)
+    Private moulds As Dictionary(Of Integer, List(Of Integer))
+    Private list_scheduled As List(Of Integer)
+    Public Function RunRuleJuma(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+        MsgBox("RunRuleJuma")
+        pr = PreactorFactory.CreatePreactorObject(preactorComObject)
+        pb = pr.PlanningBoard
+
+        If pb Is Nothing Then
+            MessageBox.Show("This Rule must be run from the Sequencer")
+            Return 0
+        End If ' if the planning board wasn't available
+
+        loaddata()
+        dict_mould_resrecord = New Dictionary(Of Integer, Integer)
+        list_scheduled = New List(Of Integer)
+
+        Dim EventParameters As Nullable(Of EventDetails)
+        Dim ResourceRecord As Integer
+        Dim QName As String
+        Dim QNumber As Integer
+        Dim ResIndex As Integer
+
+        EventParameters = pb.NextEvent()
+
+        While EventParameters.HasValue
+
+            Select Case EventParameters.Value.EventType
+
+                Case EventTypes.OperationFinished
+
+                    ' Event Parameter 1 is the Operation record that finished
+                    ' Event Parameter 2 is the Resource record that became available
+                    ' check all resources for this event because secondary constraints may have changed
+
+                    For ResourceRecord = 1 To pr.RecordCount("Resources")
+
+                        QName = pb.GetResourceQueueName(ResourceRecord)
+                        ScheduleOperations(QName, ResourceRecord, EventParameters.Value.EventTime)
+
+                    Next ResourceRecord
+
+                Case EventTypes.QueueChange
+                    ' Event Parameter 1 is the number of the queue that changed
+                    ' check all resources which use this queue
+                    ResIndex = 1
+                    ResourceRecord = 0
+                    QName = pb.GetQueueName(EventParameters.Value.Parameter1)
+                    While (pb.GetQueuesResource(QName, ResIndex, ResourceRecord))
+
+                        ScheduleOperations(QName, ResourceRecord, EventParameters.Value.EventTime)
+                        ResIndex = ResIndex + 1
+
+                    End While ' whilst there is another resource for this queue
+
+                Case EventTypes.ShiftChange
+                    ' Event Parameter 2 is the Resource record that had a shift change
+                    ' check the resource that had the shift change
+                    QNumber = pb.GetResourceQueue(EventParameters.Value.Parameter2)
+                    QName = pb.GetQueueName(QNumber)
+
+                    ScheduleOperations(QName, EventParameters.Value.Parameter2, EventParameters.Value.EventTime)
+
+                Case EventTypes.UserEvent
+                    For ResourceRecord = 1 To pr.RecordCount("Resources")
+
+                        QName = pb.GetResourceQueueName(ResourceRecord)
+                        ScheduleOperations(QName, ResourceRecord, EventParameters.Value.EventTime)
+
+                    Next ResourceRecord
+                Case Else
+
+
+            End Select
+
+            EventParameters = pb.NextEvent()
+        End While ' whilst there is another event
+        MsgBox("RunRuleJuma Done")
+
+        Return 0
+    End Function
+
+    Private Sub ScheduleOperations(ByVal QName As String, ByVal ResourceRecord As Integer, ByVal TestEventTime As Date)
+
+
+        Dim OpRecord As Integer
+        Dim CurrentRank As Integer
+        Dim TestOpResults As Nullable(Of Preactor.OperationTimes)
+        Dim ResourceFree As Boolean
+
+        Dim BestEndTime As Date = DateTime.MaxValue
+        Dim BestMould As Integer = 0
+        Dim pot As OperationTimes
+
+
+        OpRecord = 0
+        CurrentRank = 1
+        ResourceFree = pb.IsResourceFree(ResourceRecord,
+                                       TestEventTime.AddDays(pb.SchedulingAccuracy))
+        While (pb.GetOperationInQueue(QName, CurrentRank, OpRecord) And ResourceFree)
+            If list_scheduled.Contains(OpRecord) Then
+                pb.RemoveOperationFromQueue(QName, OpRecord)
+                Continue While
+            End If
+            Dim group As Integer = pr.ReadFieldInt("Orders", "Constraint Group 1", OpRecord)
+            If moulds.ContainsKey(group) Then
+                For Each mould In moulds.Item(group)
+                    If dict_mould_resrecord.ContainsKey(mould) Then
+                        If dict_mould_resrecord.Item(mould) <> ResourceRecord Then
+                            Continue For
+                        End If
+                    End If
+
+                    pr.WriteField("Orders", "Selected Constraint 1", OpRecord, mould)
+                    TestOpResults = pb.QuickTestOperationOnResource(OpRecord, ResourceRecord, TestEventTime)
+                    If Not TestOpResults.HasValue Then
+                        Continue For
+                    End If
+                    If (TestOpResults.Value.ChangeStart <= TestEventTime.AddDays(pb.SchedulingAccuracy)) And
+                        TestOpResults.Value.ProcessEnd < BestEndTime Then
+
+                        pot = TestOpResults.Value
+                        BestEndTime = TestOpResults.Value.ProcessEnd
+                        BestMould = mould
+
+                    End If
+
+                Next
+            End If
+
+
+            'TestOpResults = pb.TestOperationOnResource(OpRecord, ResourceRecord,
+            '                                        TestEventTime)
+            'If Not TestOpResults.HasValue Then
+            '    CurrentRank = CurrentRank + 1
+            '    Continue While
+            'End If ' if the test Op didn't return a value
+
+            If BestMould > 0 Then
+                pr.WriteField("Orders", "Selected Constraint 1", OpRecord, BestMould)
+                pb.QuickPutOperationOnResource(OpRecord, ResourceRecord, pot) ' if the operation could start now
+                list_scheduled.Add(OpRecord)
+
+                pb.CreateEvent(pot.ProcessEnd.AddDays(pb.SchedulingAccuracy), 0, 0)
+
+
+                If Not dict_mould_resrecord.ContainsKey(BestMould) Then
+                    dict_mould_resrecord.Add(BestMould, ResourceRecord)
+                End If
+
+            Else
+                Exit While
+            End If ' if the operation could start now
+            ' is the resource still free at this time?
+            ResourceFree = pb.IsResourceFree(ResourceRecord,
+                                       TestEventTime.AddDays(pb.SchedulingAccuracy))
+        End While ' whilst there is another operation in the queue
+    End Sub
+    Private Sub loaddata()
+        Dim records As Integer
+
+        Dim dictconstnumber_constrec As New Dictionary(Of Integer, Integer)
+        records = pr.RecordCount("Secondary Constraints")
+        For record As Integer = 1 To records
+            Dim number As Integer = pr.ReadFieldInt("Secondary Constraints", "Number", record)
+            dictconstnumber_constrec.Add(number, record) 'creation of  a data dictionary [Secondary Constraints Number,secondary constarits recod]'
+        Next
+
+        moulds = New Dictionary(Of Integer, List(Of Integer))
+        records = pr.RecordCount("Secondary Constraint Groups")
+        For record As Integer = 1 To records
+            Dim number As Integer = pr.ReadFieldInt("Secondary Constraint Groups", "Number", record)
+            Dim recs As Integer = pr.MatrixFieldSize("Secondary Constraint Groups", "Secondary Constraints", record).X
+            moulds.Add(number, New List(Of Integer))
+            For rec = 1 To recs
+                moulds.Item(number).Add(pr.ReadFieldInt("Secondary Constraint Groups", "Secondary Constraints", record, rec))
+            Next
+        Next
+    End Sub
 
 End Class
 
