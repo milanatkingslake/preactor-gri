@@ -7,6 +7,8 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Runtime.InteropServices.ComTypes
 Imports System.Text
+Imports System.Threading
+Imports System.Threading.Tasks
 Imports System.Windows.Forms
 Imports K202_OpcenterCustomization.CustomRuleTest
 Imports Preactor
@@ -15,6 +17,7 @@ Imports Preactor.Interop.PreactorObject
 <ComVisible(True)>
 <Microsoft.VisualBasic.ComClass("6d100a35-3708-4f40-92df-b73992e5ce19", "c1aa5ecb-fb8a-4bf5-ba0f-bf261cc0b3a4")>
 Public Class CustomAction
+    Dim progressBarWindow As ProgressBarWindow = New ProgressBarWindow()
 
 #Region "AppRunTest"
     Public Function AppRunTest(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
@@ -1284,7 +1287,7 @@ Public Class CustomAction
 
             ''Dim maxStr As String = (newOrderSerial + 1).ToString("D" + decimalLength.ToString())
             Dim maxStr As String = newOrderSerial.ToString("000000")
-            strNewOrderNo = newOrderNo +"-"+ maxStr
+            strNewOrderNo = newOrderNo + "-" + maxStr
             preactor.WriteField("K202_OrderManagementDetails", "InitValue", 1, newOrderSerial)
 
             'Dim numericalAttribute_6 As Double = preactor.ReadFieldDouble("Orders", "Numerical Attribute 6", RecordNumber)
@@ -1292,68 +1295,68 @@ Public Class CustomAction
             '    decOrderQty = decOrderQty - numericalAttribute_6
             'End If
             Dim i As Integer = 1
-                Dim oForm As New K202_JobSplitDetails()
-                oForm.strJobOrderNo = strNewOrderNo
-                oForm.decJobOrderQty = decOrderQty
-                oForm.isOkClick = False
+            Dim oForm As New K202_JobSplitDetails()
+            oForm.strJobOrderNo = strNewOrderNo
+            oForm.decJobOrderQty = decOrderQty
+            oForm.isOkClick = False
 
-                '' Open the windows form (K203_JobSplitDetails)
-                oForm.ShowDialog()
+            '' Open the windows form (K203_JobSplitDetails)
+            oForm.ShowDialog()
 
-                If oForm.isOkClick = True Then
+            If oForm.isOkClick = True Then
 
-                    Dim x As Integer = 1
-                    Dim belongsToOrderNo As Integer
-                    Do
-                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                        If newOrderNmb = strOrderNo Then
+                Dim x As Integer = 1
+                Dim belongsToOrderNo As Integer
+                Do
+                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                    If newOrderNmb = strOrderNo Then
 
-                            Try
-                                If Not oForm.JobQtyTxt.Text = "" Then
+                        Try
+                            If Not oForm.JobQtyTxt.Text = "" Then
 
-                                    decNewOrderQty = CDec(oForm.JobQtyTxt.Text)
-                                    decBalanceOrderQty = decOrderQty - decNewOrderQty
-                                    Dim j As Integer = 0
+                                decNewOrderQty = CDec(oForm.JobQtyTxt.Text)
+                                decBalanceOrderQty = decOrderQty - decNewOrderQty
+                                Dim j As Integer = 0
 
-                                    Dim newBlock As Integer = preactor.CreateRecord("Orders")
-                                    Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
+                                Dim newBlock As Integer = preactor.CreateRecord("Orders")
+                                Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
 
-                                    preactor.CopyRecord("Orders", i, newBlock)
+                                preactor.CopyRecord("Orders", i, newBlock)
 
-                                    preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
-                                    preactor.WriteField("Orders", "Order No.", newBlock, strNewOrderNo)
-                                    preactor.WriteField("Orders", "Quantity", newBlock, decNewOrderQty)
-                                    preactor.WriteField("Orders", "Selected Constraint 1", newBlock, -1)
-                                    preactor.WriteField("Orders", "Mid Batch Quantity", newBlock, 0)
-                                    preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, K202_APSParentNumber)
-                                    preactor.WriteField("Orders", "Order Type", newBlock, "SPLIT")
-                                    If x = 1 Then
-                                        belongsToOrderNo = newRecordNum
-                                        x = x + 1
-                                    Else
-                                        preactor.WriteField("Orders", "Belongs to Order No.", newBlock, belongsToOrderNo)
-                                    End If
-                                    '' Update the resource for splited job -03-04-2022
-                                    preactor.WriteField("Orders", "Resource", newBlock, strSplitJobResource)
-                                    Dim strPartNo As String = preactor.ReadFieldString("Orders", "Part No.", RecordNumber)
-                                    Dim intOPNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", RecordNumber)
-                                    preactor.WriteField("Orders", "Quantity", i, decBalanceOrderQty)
-                                    preactor.Commit("Orders")
+                                preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
+                                preactor.WriteField("Orders", "Order No.", newBlock, strNewOrderNo)
+                                preactor.WriteField("Orders", "Quantity", newBlock, decNewOrderQty)
+                                preactor.WriteField("Orders", "Selected Constraint 1", newBlock, -1)
+                                preactor.WriteField("Orders", "Mid Batch Quantity", newBlock, 0)
+                                preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, K202_APSParentNumber)
+                                preactor.WriteField("Orders", "Order Type", newBlock, "SPLIT")
+                                If x = 1 Then
+                                    belongsToOrderNo = newRecordNum
+                                    x = x + 1
+                                Else
+                                    preactor.WriteField("Orders", "Belongs to Order No.", newBlock, belongsToOrderNo)
                                 End If
-                            Catch ex As Exception
+                                '' Update the resource for splited job -03-04-2022
+                                preactor.WriteField("Orders", "Resource", newBlock, strSplitJobResource)
+                                Dim strPartNo As String = preactor.ReadFieldString("Orders", "Part No.", RecordNumber)
+                                Dim intOPNo As Integer = preactor.ReadFieldInt("Orders", "Op. No.", RecordNumber)
+                                preactor.WriteField("Orders", "Quantity", i, decBalanceOrderQty)
+                                preactor.Commit("Orders")
+                            End If
+                        Catch ex As Exception
 
-                            End Try
-                        End If
-                        i = i + 1
-                    Loop While i <= num
-                End If
-
-                preactor.Commit("Orders")
+                        End Try
+                    End If
+                    i = i + 1
+                Loop While i <= num
             End If
 
+            preactor.Commit("Orders")
+        End If
 
 
-            Return 0
+
+        Return 0
     End Function
 
     Public Function GetOrderSerialSeq(ByRef connetionString As String, ByRef strOrderNo As String) As Integer
@@ -1628,72 +1631,72 @@ Public Class CustomAction
         'Dim result As DialogResult = MessageBox.Show("Confirm to proceed..", "Confirmation", MessageBoxButtons.YesNo)
         'If result = DialogResult.Yes Then
         Dim num As Integer = preactor.RecordCount("Orders")
-            Dim s As Integer = 1
-            Do
-                If (planningboard.GetOperationLocateState(s)) Then
-                    Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
-                    '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
+        Dim s As Integer = 1
+        Do
+            If (planningboard.GetOperationLocateState(s)) Then
+                Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
+                '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
 
-                    Dim i As Integer = 1
-                    Do
-                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                        If newOrderNmb = orderNo Then
-                            Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+                Dim i As Integer = 1
+                Do
+                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                    If newOrderNmb = orderNo Then
+                        Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
 
-                            If OperationName = "ST1-OUTSIDE CURING" Then
-                                Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
-                                Dim j As Integer = 1
+                        If OperationName = "ST1-OUTSIDE CURING" Then
+                            Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+                            Dim j As Integer = 1
 
-                                If OperationNoOfOutsideCuring = 50 Then
-                                    Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
-                                    Do
-                                        Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
-                                        Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
-                                        Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
-                                        If secondNewOrderNmb = newOrderNmb Then
+                            If OperationNoOfOutsideCuring = 50 Then
+                                Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
+                                Do
+                                    Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
+                                    Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
+                                    Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
+                                    If secondNewOrderNmb = newOrderNmb Then
 
 
-                                            If secondOperationName = "ST1-COMPRESSION CURING" Then
-                                                Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
-                                                If toggleAttributeOne = 0 Then
+                                        If secondOperationName = "ST1-COMPRESSION CURING" Then
+                                            Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
+                                            If toggleAttributeOne = 0 Then
 
-                                                    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
-                                                    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
-                                                    preactor.Commit("Orders")
-                                                    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                    ''MsgBox("Operation Forced inside")
-                                                    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
-                                                    preactor.WriteField("Orders", "Disable Operation", i, 1)
-                                                    'ElseIf toggleAttributeOne = 1 Then
-                                                    '    Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
-                                                    '    preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
-                                                    '    preactor.Commit("Orders")
-                                                    '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                    '    MsgBox("Operation Forced outside")
-                                                    '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
-                                                    '    preactor.WriteField("Orders", "Disable Operation", i, 0)
-                                                End If
-
+                                                Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
+                                                preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
+                                                preactor.Commit("Orders")
+                                                preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                ''MsgBox("Operation Forced inside")
+                                                preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
+                                                preactor.WriteField("Orders", "Disable Operation", i, 1)
+                                                'ElseIf toggleAttributeOne = 1 Then
+                                                '    Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
+                                                '    preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
+                                                '    preactor.Commit("Orders")
+                                                '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                '    MsgBox("Operation Forced outside")
+                                                '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
+                                                '    preactor.WriteField("Orders", "Disable Operation", i, 0)
                                             End If
 
                                         End If
-                                        j = j + 1
-                                    Loop While j <= num
-                                Else
-                                    MsgBox("Operation No. of that outside curing is not 50")
-                                End If
-                                Exit Do
-                            ElseIf OperationName = "ST1-DUMMY OPERATION" Then
-                                preactor.WriteField("Orders", "Disable Operation", i, 1)
-                            End If
-                        End If
-                        i = i + 1
-                    Loop While i <= num
 
-                End If
-                s = s + 1
-            Loop While s <= num
-            preactor.Commit("Orders")
+                                    End If
+                                    j = j + 1
+                                Loop While j <= num
+                            Else
+                                MsgBox("Operation No. of that outside curing is not 50")
+                            End If
+                            Exit Do
+                        ElseIf OperationName = "ST1-DUMMY OPERATION" Then
+                            preactor.WriteField("Orders", "Disable Operation", i, 1)
+                        End If
+                    End If
+                    i = i + 1
+                Loop While i <= num
+
+            End If
+            s = s + 1
+        Loop While s <= num
+        preactor.Commit("Orders")
         ''End If
         Return 0
     End Function
@@ -1706,72 +1709,72 @@ Public Class CustomAction
         'Dim result As DialogResult = MessageBox.Show("Confirm to proceed..", "Confirmation", MessageBoxButtons.YesNo)
         'If result = DialogResult.Yes Then
         Dim s As Integer = 1
-            Do
-                If (planningboard.GetOperationLocateState(s)) Then
-                    Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
-                    '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
+        Do
+            If (planningboard.GetOperationLocateState(s)) Then
+                Dim orderNo As String = preactor.ReadFieldString("Orders", "Order No.", s)
+                '' Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", s)
 
-                    Dim i As Integer = 1
-                    Do
-                        Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
-                        If newOrderNmb = orderNo Then
-                            Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
+                Dim i As Integer = 1
+                Do
+                    Dim newOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", i)
+                    If newOrderNmb = orderNo Then
+                        Dim OperationName As String = preactor.ReadFieldString("Orders", "Operation Name", i)
 
-                            If OperationName = "ST1-OUTSIDE CURING" Then
-                                Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
-                                Dim j As Integer = 1
+                        If OperationName = "ST1-OUTSIDE CURING" Then
+                            Dim OperationNoOfOutsideCuring As Integer = preactor.ReadFieldInt("Orders", "Op. No.", i)
+                            Dim j As Integer = 1
 
-                                If OperationNoOfOutsideCuring = 50 Then
-                                    Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
-                                    Do
-                                        Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
-                                        Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
-                                        Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
-                                        If secondNewOrderNmb = newOrderNmb Then
+                            If OperationNoOfOutsideCuring = 50 Then
+                                Dim OperationTimePerItem As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", i)
+                                Do
+                                    Dim secondNewOrderNmb As String = preactor.ReadFieldString("Orders", "Order No.", j)
+                                    Dim secondOperationName As String = preactor.ReadFieldString("Orders", "Operation Name", j)
+                                    Dim OperationTimePerItemSec As Double = preactor.ReadFieldDouble("Orders", "Op. Time per Item", j)
+                                    If secondNewOrderNmb = newOrderNmb Then
 
 
-                                            If secondOperationName = "ST1-COMPRESSION CURING" Then
-                                                Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
-                                                'If toggleAttributeOne = 0 Then
+                                        If secondOperationName = "ST1-COMPRESSION CURING" Then
+                                            Dim toggleAttributeOne As Integer = preactor.ReadFieldInt("Orders", "Toggle Attribute 1", j)
+                                            'If toggleAttributeOne = 0 Then
 
-                                                '    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
-                                                '    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
-                                                '    preactor.Commit("Orders")
-                                                '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                '    MsgBox("Operation Forced inside")
-                                                '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
-                                                '    preactor.WriteField("Orders", "Disable Operation", i, 1)
-                                                'Else
-                                                If toggleAttributeOne = 1 Then
-                                                    Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
-                                                    preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
-                                                    preactor.Commit("Orders")
-                                                    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
-                                                    '' MsgBox("Operation Forced outside")
-                                                    preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
-                                                    preactor.WriteField("Orders", "Disable Operation", i, 0)
-                                                End If
-
+                                            '    Dim newOperationTimePerItem As Double = OperationTimePerItem + OperationTimePerItemSec
+                                            '    preactor.WriteField("Orders", "Duration Attribute 1", j, OperationTimePerItem)
+                                            '    preactor.Commit("Orders")
+                                            '    preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                            '    MsgBox("Operation Forced inside")
+                                            '    preactor.WriteField("Orders", "Toggle Attribute 1", j, 1)
+                                            '    preactor.WriteField("Orders", "Disable Operation", i, 1)
+                                            'Else
+                                            If toggleAttributeOne = 1 Then
+                                                Dim newOperationTimePerItem As Double = OperationTimePerItemSec - OperationTimePerItem
+                                                preactor.WriteField("Orders", "Duration Attribute 1", j, -1)
+                                                preactor.Commit("Orders")
+                                                preactor.WriteField("Orders", "Op. Time per Item", j, newOperationTimePerItem)
+                                                '' MsgBox("Operation Forced outside")
+                                                preactor.WriteField("Orders", "Toggle Attribute 1", j, 0)
+                                                preactor.WriteField("Orders", "Disable Operation", i, 0)
                                             End If
 
                                         End If
-                                        j = j + 1
-                                    Loop While j <= num
-                                Else
-                                    MsgBox("Operation No. of that outside curing is not 50")
-                                End If
-                                Exit Do
-                            ElseIf OperationName = "ST1-DUMMY OPERATION" Then
-                                preactor.WriteField("Orders", "Disable Operation", i, 0)
-                            End If
-                        End If
-                        i = i + 1
-                    Loop While i <= num
 
-                End If
-                s = s + 1
-            Loop While s <= num
-            preactor.Commit("Orders")
+                                    End If
+                                    j = j + 1
+                                Loop While j <= num
+                            Else
+                                MsgBox("Operation No. of that outside curing is not 50")
+                            End If
+                            Exit Do
+                        ElseIf OperationName = "ST1-DUMMY OPERATION" Then
+                            preactor.WriteField("Orders", "Disable Operation", i, 0)
+                        End If
+                    End If
+                    i = i + 1
+                Loop While i <= num
+
+            End If
+            s = s + 1
+        Loop While s <= num
+        preactor.Commit("Orders")
         'ElseIf result = DialogResult.No Then
         '    MessageBox.Show("No pressed")
         ''End If
@@ -2673,6 +2676,208 @@ Public Class CustomAction
 
         Return 0
     End Function
+    Public Async Function ShowProgressBar() As Task
+        ' Use Task.Run to execute the creation and showing of the new form on a background thread
+        Await Task.Run(Sub()
+                           progressBarWindow.maxProgress = 10
+                           progressBarWindow.ShowDialog()
+                       End Sub)
+    End Function
+    Private Async Sub CallProgressWindow()
+        Await ShowProgressBar()
+    End Sub
+    Function MasterProductionSchedule(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
+        Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
+
+        Dim planningboard As IPlanningBoard = preactor.PlanningBoard
+        Dim customClickTime As DateTime
+        customClickTime = planningboard.CustomClickTime
+        Dim demandCount As Integer = preactor.RecordCount("Demand")
+        Dim ordersCount As Integer = preactor.RecordCount("Orders")
+        Dim productCount As Integer = preactor.RecordCount("Products")
+        Dim supplyCount As Integer = preactor.RecordCount("Supply")
+        Dim k202_ActualProductionRecordsCount As Integer = preactor.RecordCount("K202_ActualProductionRecords")
+        Dim secondaryConstraintGroupsCount As Integer = preactor.RecordCount("Secondary Constraint Groups")
+        Dim secondaryConstraintsCount As Integer = preactor.RecordCount("Secondary Constraints")
+        Dim secondaryCalenderPeriodsCount As Integer = preactor.RecordCount("Secondary Calendar Periods")
+        Dim pb As IPlanningBoard = preactor.PlanningBoard
+        Dim connetionString As String = preactor.ParseShellString("{DB CONNECT STRING}")
+        Dim i As Integer = 1
+        Dim dt As DataTable = New DataTable()
+
+        'Dim currentDate As Date = Now
+        'Dim daysInMonth As Integer = Date.DaysInMonth(currentDate.Year, currentDate.Month)
+        Dim currentMonthName As String = DateTime.Now.ToString("MMMM")
+        Dim currentDateWithNumber As Integer = CInt(DateTime.Now.ToString("dd"))
+        Dim currentYear As Integer = CInt(DateTime.Now.ToString("yyyy"))
+        'Dim progressBarWindow As ProgressBarWindow = New ProgressBarWindow()
+        'progressBarWindow.maxProgress = 10
+        'progressBarWindow.ShowDialog()
+
+        CallProgressWindow()
+
+        ''Thread.Sleep(1000)
+        Dim quantityPlanningInterface As QuantityPlanningInterface = New QuantityPlanningInterface()
+
+        quantityPlanningInterface.dataTable = K202_GetQuantityPlanningDetails(connetionString)
+        ''progressBarWindow.Close()
+        progressBarWindow.Close()
+
+        quantityPlanningInterface.ShowDialog()
+        ''Try
+        'If quantityPlanningInterface.saveBtnClicked = True Then
+        '    Dim maxNumberOfOrderNo As Integer = 0
+        '    Dim firstLetterOfOrderNo As String = "Q"
+        '    Dim selectedOrderList As New List(Of String)
+        '    If currentYear = 2022 Then
+        '        firstLetterOfOrderNo = "Q"
+        '    ElseIf currentYear = 2023 Then
+        '        firstLetterOfOrderNo = "R"
+        '    ElseIf currentYear = 2024 Then
+        '        firstLetterOfOrderNo = "S"
+        '    ElseIf currentYear = 2025 Then
+        '        firstLetterOfOrderNo = "T"
+        '    ElseIf currentYear = 2026 Then
+        '        firstLetterOfOrderNo = "U"
+        '    End If
+        '    Dim firstPart As String = firstLetterOfOrderNo + currentMonthName.Substring(0, 1) + currentDateWithNumber.ToString
+
+        '    For e As Integer = 0 To dt.Rows.Count - 1
+        '        If e >= 1 Then
+        '            Dim sku As String = dt.Rows(e)("SKU").ToString
+        '            Dim f As Integer = 1
+        '            Dim newOrderNo As String
+        '            If ordersCount > 0 Then
+        '                Do
+        '                    Dim partNo As String = preactor.ReadFieldString("Orders", "Part No.", f)
+        '                    Dim orderNoOfF As String = preactor.ReadFieldString("Orders", "Order No.", f)
+        '                    If Not orderNoOfF.Contains("/") Then
+        '                        If orderNoOfF.Contains(firstLetterOfOrderNo + currentMonthName.Substring(0, 1) + currentDateWithNumber.ToString) Then
+        '                            Dim lastThreeChar As Integer = CInt(orderNoOfF.Substring(orderNoOfF.Length - 4, 4))
+        '                            If maxNumberOfOrderNo < lastThreeChar Then
+        '                                maxNumberOfOrderNo = lastThreeChar
+        '                            End If
+        '                        End If
+        '                    End If
+        '                    f = f + 1
+        '                Loop While f <= ordersCount
+        '            End If
+
+        '            Dim decimalLength As Integer
+        '            decimalLength = 4
+
+        '            'If (dt.Rows(e)("Is Updated").ToString = "True") Or (Not dt.Rows(e)("Is Updated") Is DBNull.Value) Then
+
+        '            Dim orderQtyCLM As String = dt.Rows(e)("Order Qty CLM").ToString
+        '            If Not orderQtyCLM = "" Then
+        '                If Not CInt(orderQtyCLM) = 0 Then
+        '                    Dim newBlock As Integer = preactor.CreateRecord("Orders")
+        '                    Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
+
+        '                    Dim maxStr As String = (maxNumberOfOrderNo + 1).ToString("D" + decimalLength.ToString())
+        '                    newOrderNo = firstPart + maxStr
+        '                    selectedOrderList.Add(newOrderNo)
+        '                    'preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
+        '                    preactor.WriteField("Orders", "Order No.", newBlock, newOrderNo)
+        '                    preactor.WriteField("Orders", "Quantity", newBlock, orderQtyCLM)
+        '                    preactor.WriteField("Orders", "Part No.", newBlock, sku)
+        '                    preactor.WriteField("Orders", "Op. No.", newBlock, 20)
+        '                    preactor.WriteField("Orders", "Disable Operation", newBlock, True)
+        '                    preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, newOrderNo)
+        '                    If dt.Rows(e)("Urgency").ToString = "U" Then
+        '                        preactor.WriteField("Orders", "Priority", newBlock, 11)
+        '                    End If
+        '                    preactor.ExpandJob("Orders", newBlock)
+        '                    maxNumberOfOrderNo = maxNumberOfOrderNo + 1
+        '                    preactor.WriteField("Orders", "String Attribute 2", newBlock, "CLM")
+        '                End If
+        '            End If
+        '            Dim orderQtyCMP As String = dt.Rows(e)("Order Qty CMP").ToString
+        '            If Not orderQtyCMP = "" Then
+        '                If Not CInt(orderQtyCMP) = 0 Then
+        '                    Dim newBlock As Integer = preactor.CreateRecord("Orders")
+        '                    Dim newRecordNum As Integer = preactor.ReadFieldInt("Orders", "Number", newBlock)
+
+        '                    Dim maxStr As String = (maxNumberOfOrderNo + 1).ToString("D" + decimalLength.ToString())
+        '                    newOrderNo = firstPart + maxStr
+        '                    selectedOrderList.Add(newOrderNo)
+        '                    'preactor.WriteField("Orders", "Number", newBlock, newRecordNum)
+        '                    preactor.WriteField("Orders", "Order No.", newBlock, newOrderNo)
+        '                    preactor.WriteField("Orders", "Quantity", newBlock, orderQtyCMP)
+        '                    preactor.WriteField("Orders", "Part No.", newBlock, sku)
+        '                    preactor.WriteField("Orders", "Op. No.", newBlock, 20)
+        '                    preactor.WriteField("Orders", "Disable Operation", newBlock, False)
+        '                    preactor.WriteField("Orders", "K202_APSParentNumber", newBlock, newOrderNo)
+        '                    If dt.Rows(e)("Urgency").ToString = "U" Then
+        '                        preactor.WriteField("Orders", "Priority", newBlock, 11)
+        '                    End If
+        '                    preactor.ExpandJob("Orders", newBlock)
+        '                    preactor.WriteField("Orders", "String Attribute 2", newBlock, "CMP")
+        '                    maxNumberOfOrderNo = maxNumberOfOrderNo + 1
+        '                End If
+        '            End If
+        '            'End If
+        '        End If
+        '    Next
+        '    preactor.Commit("Orders")
+        '    Dim ordersCountNew = preactor.RecordCount("Orders")
+        '    For Each element As String In selectedOrderList
+        '        If ordersCountNew > 0 Then
+        '            Dim g As Integer = 1
+        '            Do
+        '                Dim orderNoOfG As String = preactor.ReadFieldString("Orders", "Order No.", g)
+        '                Dim belongsToOrderNo As String = preactor.ReadFieldString("Orders", "Belongs to Order No.", g)
+        '                If orderNoOfG = element Then
+        '                    Dim stringAttribute2 As String = preactor.ReadFieldString("Orders", "String Attribute 2", g)
+        '                    If stringAttribute2 = "CLM" And belongsToOrderNo = "PARENT" Then
+        '                        preactor.WriteField("Orders", "Disable Operation", g, False)
+        '                        Dim h As Integer = 1
+        '                        Do
+        '                            Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
+        '                            Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
+        '                            Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
+        '                            If orderNoOfH = orderNoOfG Then
+        '                                If opNoOfH = 40 And opName.Contains("COMPRESSION") Then
+        '                                    preactor.WriteField("Orders", "Disable Operation", h, True)
+        '                                End If
+        '                                If opNoOfH = 50 Then
+        '                                    preactor.WriteField("Orders", "Disable Operation", h, True)
+        '                                End If
+        '                            End If
+        '                            h = h + 1
+        '                        Loop While h <= ordersCountNew
+        '                    End If
+        '                    If stringAttribute2 = "CMP" And belongsToOrderNo = "PARENT" Then
+        '                        preactor.WriteField("Orders", "Disable Operation", g, False)
+        '                        Dim h As Integer = 1
+        '                        Do
+        '                            Dim orderNoOfH As String = preactor.ReadFieldString("Orders", "Order No.", h)
+        '                            Dim opNoOfH As Integer = preactor.ReadFieldInt("Orders", "Op. No.", h)
+        '                            Dim opName As String = preactor.ReadFieldString("Orders", "Operation Name", h)
+        '                            If orderNoOfH = orderNoOfG Then
+        '                                If opNoOfH = 40 And opName.Contains("CLAMP") Then
+        '                                    preactor.WriteField("Orders", "Disable Operation", h, True)
+        '                                End If
+        '                            End If
+        '                            h = h + 1
+        '                        Loop While h <= ordersCountNew
+        '                    End If
+        '                End If
+        '                g = g + 1
+        '            Loop While g <= ordersCountNew
+        '        End If
+        '    Next
+        '    preactor.Commit("Orders")
+        '    quantityPlanningInterface.Close_Interface()
+        'End If
+        'Catch ex As Exception
+        '    MsgBox("Error")
+        'End Try
+
+        Return 0
+    End Function
+
+
     Public Function GetMaxMolds(ByRef connetionString As String, ByRef intSecondaryConstraintRecNumber As Integer, ByRef dtStartTime As Date) As Integer
         Try
             Dim connection As SqlConnection
@@ -2983,6 +3188,37 @@ Public Class CustomAction
         End Try
 
     End Function
+
+    Public Function K202_GetQuantityPlanningDetails(ByRef connetionString As String) As DataTable
+        Dim tblDueDateExcJob As New DataTable("QuantityPlanningTable")
+
+        Try
+            Dim connection As SqlConnection
+            Dim adapter As SqlDataAdapter
+            Dim command As New SqlCommand
+
+            connection = New SqlConnection(connetionString)
+
+            connection.Open()
+            command.Connection = connection
+            command.CommandType = CommandType.StoredProcedure
+            command.CommandText = "K202_MasterProductionSchedule_Sp"
+            command.CommandTimeout = 600
+
+
+            adapter = New SqlDataAdapter(command)
+            command.ExecuteNonQuery()
+            adapter.Fill(tblDueDateExcJob)
+            connection.Close()
+            Return tblDueDateExcJob
+        Catch ex As Exception
+            MsgBox("DyeOrder table load Error",, "Error")
+        Finally
+        End Try
+        Return tblDueDateExcJob
+
+    End Function
+
     Public Function K201_DeleteCalendarExceptionByResource(ByRef connetionString As String, ByRef resource As String) As Decimal
 
         Try
@@ -3542,7 +3778,7 @@ Public Class CustomAction
                             resourceList.Add(resourceName)
                         End If
                     End If
-                        resourceLoopStart2 = resourceLoopStart2 + 1
+                    resourceLoopStart2 = resourceLoopStart2 + 1
                 Loop While resourceLoopStart2 <= resourceCount
 
                 Dim dt As DataTable = New DataTable()
@@ -3677,18 +3913,18 @@ Public Class CustomAction
         Dim previousOperation As Integer = planningboard.GetResourcesCurrentOperation(dropResource, dragSetupStart, 1)
         ''Dim resourceNext As Integer = planningboard.GetResourceNumber(dropResource.ToString())
         If previousOperation > 0 Then
-            Dim previousOperationEndTime As Date = Preactor.ReadFieldDateTime("Orders", "End Time", previousOperation)
+            Dim previousOperationEndTime As Date = preactor.ReadFieldDateTime("Orders", "End Time", previousOperation)
             Dim nextOperation As Integer = planningboard.GetResourcesNextOperation(dropResource, dragSetupStart)
             ''Dim nextOperation As Integer = planningboard.GetResourcesNextOperation(planningboard.GetResourceNumber(dropResource.ToString()), dragSetupStart)
 
-            Dim nextOperationstartTime As Date = Preactor.ReadFieldDateTime("Orders", "Setup Time", RecordNumber)
+            Dim nextOperationstartTime As Date = preactor.ReadFieldDateTime("Orders", "Setup Time", RecordNumber)
 
             planningboard.PutOperationOnResource(nextOperation, dropResource, previousOperationEndTime)
 
-            Preactor.DeleteRecord("K202_DragDropTemp", 1)
-            Preactor.Commit("K202_DragDropTemp")
+            preactor.DeleteRecord("K202_DragDropTemp", 1)
+            preactor.Commit("K202_DragDropTemp")
 
-            Preactor.Redraw()
+            preactor.Redraw()
         End If
 
         Return 0

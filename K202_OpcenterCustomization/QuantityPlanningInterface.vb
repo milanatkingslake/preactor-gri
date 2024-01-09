@@ -84,6 +84,32 @@ Public Class QuantityPlanningInterface
 
     Private Sub QuantityPlanningInterface_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         DataGridView1.DataSource = dataTable
+
+        'dt.Columns("SKU").ReadOnly = True
+        'dt.Columns("Description").ReadOnly = True
+        'dt.Columns("Planning Qty").ReadOnly = True
+        'dt.Columns("No Of CLM").ReadOnly = True
+        'dt.Columns("No Of CMP").ReadOnly = True
+        'dt.Columns("On Hand").ReadOnly = True
+        'dt.Columns("On Plan").ReadOnly = True
+        'dt.Columns("Running Qty").ReadOnly = True
+
+
+        'DataGridView1.Columns("SKU").ReadOnly = True
+        'DataGridView1.Columns("Description").ReadOnly = True
+        'DataGridView1.Columns("ExcessQty").ReadOnly = True
+        'DataGridView1.Columns("PlanningQty").ReadOnly = True
+        'DataGridView1.Columns("NoOfCLM").ReadOnly = True
+        'DataGridView1.Columns("AvailableCLM").ReadOnly = True
+        'DataGridView1.Columns("NoOfCMP").ReadOnly = True
+        'DataGridView1.Columns("AvailableCMP").ReadOnly = True
+        'DataGridView1.Columns("OrderQtyCLM").ReadOnly = True
+        'DataGridView1.Columns("OrderQtyCMP").ReadOnly = True
+        'DataGridView1.Columns("BalanceQty").ReadOnly = True
+        'DataGridView1.Columns("Urgency").ReadOnly = True
+
+        DataGridView1.ReadOnly = True
+
         DataGridView1.Columns("Urgency").DefaultCellStyle.Alignment = Windows.Forms.DataGridViewContentAlignment.TopCenter
         DataGridView1.Columns("Urgency").DefaultCellStyle.ForeColor = Color.Red
         DataGridView1.Columns("Urgency").DefaultCellStyle.Font = New Font("Tahoma", 9.25, FontStyle.Bold)

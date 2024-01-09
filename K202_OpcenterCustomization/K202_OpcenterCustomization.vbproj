@@ -148,6 +148,12 @@
     <Compile Include="K202_CustomSchedulingWindow.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ProgressBarWindow.Designer.vb">
+      <DependentUpon>ProgressBarWindow.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressBarWindow.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="RecordValidation.Designer.vb">
       <DependentUpon>RecordValidation.vb</DependentUpon>
     </Compile>
@@ -208,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="K202_JobSplitDetails.resx">
       <DependentUpon>K202_JobSplitDetails.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBarWindow.resx">
+      <DependentUpon>ProgressBarWindow.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="QuantityPlanningInterface.resx">
       <DependentUpon>QuantityPlanningInterface.vb</DependentUpon>

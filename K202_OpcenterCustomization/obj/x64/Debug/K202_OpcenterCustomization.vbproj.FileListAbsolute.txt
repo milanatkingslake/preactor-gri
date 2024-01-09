@@ -144,3 +144,4 @@ D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomiza
 D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.dll
 D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.xml
 D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.pdb
+D:\Kingslake\Development\Preactor\GRI\Source\preactor-gri\K202_OpcenterCustomization\obj\x64\Debug\K202_OpcenterCustomization.ProgressBarWindow.resources

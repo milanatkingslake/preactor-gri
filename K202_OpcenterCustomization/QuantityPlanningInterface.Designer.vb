@@ -45,6 +45,7 @@ Partial Class QuantityPlanningInterface
         Me.SaveBtn2.TabIndex = 2
         Me.SaveBtn2.Text = "Order Genarate"
         Me.SaveBtn2.UseVisualStyleBackColor = True
+        Me.SaveBtn2.Visible = False
         '
         'TextBox1
         '
