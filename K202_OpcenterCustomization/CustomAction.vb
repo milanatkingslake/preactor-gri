@@ -3051,10 +3051,14 @@ Public Class CustomAction
         If functionRunOnSecondTime = True Then
             Dim firstItem As Integer = SelectedOrderList(0)
             Dim mainResourceNo As Integer = preactor.ReadFieldInt("Orders", "Resource", firstItem)
+            Dim mainResourceAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", firstItem)
+
             If Not SelectedOrderList.Count = numOfOrders Then
                 For Each index As Integer In SelectedOrderList
                     Dim resourceNoOfEachIndex As Integer = preactor.ReadFieldInt("Orders", "Resource", index)
-                    If Not mainResourceNo = resourceNoOfEachIndex Then
+                    Dim secondResourceAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", resourceNoOfEachIndex)
+                    If Not (mainResourceAttribute_1 = secondResourceAttribute_1) Then
+                        '' If Not mainResourceNo = resourceNoOfEachIndex Then
                         MsgBox("Need to select operations in same resource.")
                         Return 0
                     End If
@@ -3094,10 +3098,13 @@ Public Class CustomAction
                     End If
 
                 Next
+                Dim mainResourceAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", mainResourceNo)
 
                 For Each index As Integer In SelectedOrderList
                     Dim resourceNoOfEachIndex As Integer = preactor.ReadFieldInt("Orders", "Resource", index)
-                    If Not mainResourceNo = resourceNoOfEachIndex Then
+                    Dim secondResourceAttribute_1 As String = preactor.ReadFieldString("Resources", "Attribute 1", resourceNoOfEachIndex)
+                    If Not (mainResourceAttribute_1 = secondResourceAttribute_1) Then
+                        '' If Not mainResourceNo = resourceNoOfEachIndex Then
                         MsgBox("Need to select operations in same resource.")
                         Return 0
                     End If
