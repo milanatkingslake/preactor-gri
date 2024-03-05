@@ -3219,7 +3219,7 @@ Public Class CustomAction
             connection.Close()
             Return tblDueDateExcJob
         Catch ex As Exception
-            MsgBox("DyeOrder table load Error",, "Error")
+            MsgBox("K202_MasterProductionSchedule_Sp Error " + ex.Message,, "Error")
         Finally
         End Try
         Return tblDueDateExcJob
