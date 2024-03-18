@@ -2526,7 +2526,7 @@ Public Class CustomAction
         dt.Columns("Running Qty").ReadOnly = True
 
         Dim quantityPlanningInterface As QuantityPlanningInterface = New QuantityPlanningInterface()
-        quantityPlanningInterface.dataTable = dt
+        quantityPlanningInterface.tblOrders = dt
         quantityPlanningInterface.ShowDialog()
         'Try
         If quantityPlanningInterface.saveBtnClicked = True Then
@@ -2688,38 +2688,38 @@ Public Class CustomAction
     End Sub
     Function MasterProductionSchedule(ByRef preactorComObject As PreactorObj, ByRef pespComObject As Object) As Integer
         Dim preactor As IPreactor = PreactorFactory.CreatePreactorObject(preactorComObject)
-
         Dim planningboard As IPlanningBoard = preactor.PlanningBoard
-        Dim customClickTime As DateTime
-        customClickTime = planningboard.CustomClickTime
-        Dim demandCount As Integer = preactor.RecordCount("Demand")
-        Dim ordersCount As Integer = preactor.RecordCount("Orders")
-        Dim productCount As Integer = preactor.RecordCount("Products")
-        Dim supplyCount As Integer = preactor.RecordCount("Supply")
-        Dim k202_ActualProductionRecordsCount As Integer = preactor.RecordCount("K202_ActualProductionRecords")
-        Dim secondaryConstraintGroupsCount As Integer = preactor.RecordCount("Secondary Constraint Groups")
-        Dim secondaryConstraintsCount As Integer = preactor.RecordCount("Secondary Constraints")
-        Dim secondaryCalenderPeriodsCount As Integer = preactor.RecordCount("Secondary Calendar Periods")
-        Dim pb As IPlanningBoard = preactor.PlanningBoard
         Dim connetionString As String = preactor.ParseShellString("{DB CONNECT STRING}")
-        Dim i As Integer = 1
-        Dim dt As DataTable = New DataTable()
 
-        'Dim currentDate As Date = Now
-        'Dim daysInMonth As Integer = Date.DaysInMonth(currentDate.Year, currentDate.Month)
-        Dim currentMonthName As String = DateTime.Now.ToString("MMMM")
-        Dim currentDateWithNumber As Integer = CInt(DateTime.Now.ToString("dd"))
-        Dim currentYear As Integer = CInt(DateTime.Now.ToString("yyyy"))
-        'Dim progressBarWindow As ProgressBarWindow = New ProgressBarWindow()
-        'progressBarWindow.maxProgress = 10
-        'progressBarWindow.ShowDialog()
+        'Dim customClickTime As DateTime
+        'customClickTime = planningboard.CustomClickTime
+        'Dim demandCount As Integer = preactor.RecordCount("Demand")
+        'Dim ordersCount As Integer = preactor.RecordCount("Orders")
+        'Dim productCount As Integer = preactor.RecordCount("Products")
+        'Dim supplyCount As Integer = preactor.RecordCount("Supply")
+        'Dim k202_ActualProductionRecordsCount As Integer = preactor.RecordCount("K202_ActualProductionRecords")
+        'Dim secondaryConstraintGroupsCount As Integer = preactor.RecordCount("Secondary Constraint Groups")
+        'Dim secondaryConstraintsCount As Integer = preactor.RecordCount("Secondary Constraints")
+        'Dim secondaryCalenderPeriodsCount As Integer = preactor.RecordCount("Secondary Calendar Periods")
+        'Dim pb As IPlanningBoard = preactor.PlanningBoard
+        'Dim i As Integer = 1
+        'Dim dt As DataTable = New DataTable()
+
+        ''Dim currentDate As Date = Now
+        ''Dim daysInMonth As Integer = Date.DaysInMonth(currentDate.Year, currentDate.Month)
+        'Dim currentMonthName As String = DateTime.Now.ToString("MMMM")
+        'Dim currentDateWithNumber As Integer = CInt(DateTime.Now.ToString("dd"))
+        'Dim currentYear As Integer = CInt(DateTime.Now.ToString("yyyy"))
+        ''Dim progressBarWindow As ProgressBarWindow = New ProgressBarWindow()
+        ''progressBarWindow.maxProgress = 10
+        ''progressBarWindow.ShowDialog()
 
         CallProgressWindow()
 
         ''Thread.Sleep(1000)
         Dim quantityPlanningInterface As QuantityPlanningInterface = New QuantityPlanningInterface()
 
-        quantityPlanningInterface.dataTable = K202_GetQuantityPlanningDetails(connetionString)
+        quantityPlanningInterface.tblOrders = K202_GetQuantityPlanningDetails(connetionString)
         ''progressBarWindow.Close()
         progressBarWindow.Close()
 
